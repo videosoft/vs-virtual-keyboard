@@ -1,0 +1,100 @@
+import KeyboardConfig from "../types/kb-config";
+import KeyboardKey from "../types/kb-key";
+import KeyboardState from "../types/kb-state";
+import { h } from "../utils/create-element";
+
+
+function getLayoutTable(layoutJson: Array<Array<KeyboardKey>>) {
+  return layoutJson.map(l => l.map(symbolKey => {
+    if (typeof symbolKey === 'string') {
+      return { symbol: symbolKey };
+    }
+    return { ...(symbolKey as any) };
+  }))
+}
+
+function addKeyboardKeyListener(buttonEl: any, config: KeyboardConfig, action: Function, key: KeyboardKey) {
+  let pressedOn: number = 0;
+  let pressedOnX: number = 0;
+  let pressedOnY: number = 0;
+
+  buttonEl.addEventListener('mousedown', (event: any) => {
+    pressedOn = (new Date).getTime();
+    pressedOnX = event.x;
+    pressedOnY = event.y;
+  });
+
+  buttonEl.addEventListener('mouseup', (event: any) => {
+    const diffX = event.x - pressedOnX;
+    const diffY = event.y - pressedOnY;
+    console.log(event);
+  });
+}
+
+
+export default (state: KeyboardState, config: KeyboardConfig, action: Function) => {
+
+  // Gets the default layout for first
+  if (!state.layout) {
+    const layouts: any = config.layouts || {};
+    const layout = layouts.layouts.find((l: any) => l.name === config.layouts?.defaultLayout);
+    state.layout = getLayoutTable(layout.rows);
+  }
+
+  // Kb rows format
+  const rows = state.layout.map(l => {
+
+    // Row buttons format
+    const buttons = l.map(kButton => {
+
+      // Button with icon
+      if (kButton.base64Icon) {
+        return h('button', 'vs-virtual-kb-row-button-with-icon', [
+          h('img', 'vs-virtual-kb-row-button-with-icon-icon', [], {
+            src: kButton.base64Icon,
+            alt: kButton.symbol
+          })
+        ]);
+      }
+
+      // Common char button
+      if (!state.mode) {
+        return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
+      }
+
+      // Button without variations
+      if (!kButton.variations?.length) {
+        return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
+      }
+
+      // Button variation
+      const variation = kButton.variations.find(v => v.mode === state.mode);
+      if (!variation) {
+        return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
+      }
+
+      // Variation button icon
+      if (variation.key.base64Icon) {
+        return h('button', 'vs-virtual-kb-row-button-with-icon', [
+          h('img', 'vs-virtual-kb-row-button-with-icon-icon', [], {
+            src: kButton.base64Icon,
+            alt: kButton.symbol
+          })
+        ]);
+      }
+
+      // Variation symbol
+      const buttonEl = h('button', 'vs-virtual-kb-row-button', [], variation.key.symbol);
+
+      // Adding click listeners
+      addKeyboardKeyListener(buttonEl, config, action, kButton);
+
+      return buttonEl;
+    });
+
+    // Row buttons div
+    return h('div', 'vs-virtual-kb-row', buttons);
+  });
+
+  return h('div', `vs-virtual-kb ${config.wrpClass || ''}`, rows);
+}
