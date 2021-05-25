@@ -60,13 +60,13 @@ let keyboardEl: any;
     }
   });
   window.addEventListener('focusout', () => {
-    // focusOutTimeout = setTimeout(() => {
-    //   const action = actions.get(ACTION_KB_TOGGLE);
-    //   if (action) {
-    //     const state: KeyboardState = action(currentState, { input: null });
-    //     render(state);
-    //   }
-    // }, 600);
+    focusOutTimeout = setTimeout(() => {
+      const action = actions.get(ACTION_KB_TOGGLE);
+      if (action) {
+        const state: KeyboardState = action(currentState, { input: null });
+        render(state);
+      }
+    }, 600);
   });
 
   // First render

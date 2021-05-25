@@ -215,6 +215,7 @@
         });
         return h('div', "vs-virtual-kb " + (config.wrpClass || '') + " " + (state.input ? 'vs-virtual-kb-opened' : 'vs-virtual-kb-closed'), rows);
     });
+    //# sourceMappingURL=keyboard.js.map
 
     var keyboardEl;
     window.VsVirtualKeyboard = function (options) {
@@ -254,7 +255,12 @@
                 }
             });
         };
+        /**
+         * Focus-in and Focus-out input and toggle keyboard
+         */
+        var focusOutTimeout;
         window.addEventListener('focusin', function (event) {
+            focusOutTimeout && clearTimeout(focusOutTimeout);
             var action = actions.get(ACTION_KB_TOGGLE);
             if (action) {
                 setTimeout(function () {
@@ -264,18 +270,17 @@
             }
         });
         window.addEventListener('focusout', function () {
-            // focusOutTimeout = setTimeout(() => {
-            //   const action = actions.get(ACTION_KB_TOGGLE);
-            //   if (action) {
-            //     const state: KeyboardState = action(currentState, { input: null });
-            //     render(state);
-            //   }
-            // }, 600);
+            focusOutTimeout = setTimeout(function () {
+                var action = actions.get(ACTION_KB_TOGGLE);
+                if (action) {
+                    var state = action(currentState, { input: null });
+                    render(state);
+                }
+            }, 600);
         });
         // First render
         render(currentState);
     };
-    //# sourceMappingURL=vs-virtual-keyboard.js.map
 
 })));
 //# sourceMappingURL=vs-virtual-keyboard.umd.js.map
