@@ -17,6 +17,14 @@
 
   <script>
 
+    /***
+     *
+     * ###########################################################
+     *      DEFINING KEYBOARD LAYOUTS AND SPECIAL KEYS
+     * ###########################################################
+     *
+     */
+
     /**
      * NUMERIC
      * Numeric keyboard config
@@ -128,10 +136,21 @@
     const querty = [
 
       // First row
-      [...'qwertyuiop'],
+      [
+        ...'qw',
+        {symbol: 'e', variations: [...'éèêẽ']},
+        ...'rty',
+        {symbol: 'u', variations: [...'úùûũ']},
+        {symbol: 'i', variations: [...'íìîĩ']},
+        {symbol: 'o', variations: [...'óòôõ']},
+        'p'
+      ],
 
       // Second kb row
-      [...'asdfghjklç'],
+      [
+        {symbol: 'a', variations: [...'áàâã']},
+        ...'sdfghjklç'
+      ],
 
       // Third, with special chars!
       [
@@ -190,7 +209,17 @@
     /**
      * This is the same querty kb, but it haves uppercase chars
      */
-    const quertyUppercase = querty.map(q => q.map(k => typeof k === 'string' ? k.toUpperCase() : k));
+    const quertyUppercase = querty.map(q => {
+      return q.map(k => {
+        if (typeof k === 'object' && k.variations) {
+          return {
+            symbol: k.symbol.toUpperCase(),
+            variations: k.variations.map(c => c.toUpperCase())
+          };
+        }
+        return typeof k === 'string' ? k.toUpperCase() : k;
+      })
+    });
 
     /**
      * Shift on uppercase
@@ -201,8 +230,20 @@
       base64Icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAsCAYAAADmZKH2AAAABGdBTUEAALGPC/xhBQAAAYRpQ0NQSUNDIHByb2ZpbGUAACiRfZE9SMNAHMVfU0tFKw52KOKQoTpZFBVx1CoUoUKpFVp1MLn0C5o0JCkujoJrwcGPxaqDi7OuDq6CIPgB4ubmpOgiJf4vKbSI8eC4H+/uPe7eAUKjwlSzaxxQNctIJ+JiNrcqBl8RQAS9GENMYqY+l0ol4Tm+7uHj612MZ3mf+3P0KXmTAT6ReJbphkW8QTy9aemc94nDrCQpxOfEowZdkPiR67LLb5yLDgs8M2xk0vPEYWKx2MFyB7OSoRJPEUcVVaN8IeuywnmLs1qpsdY9+QtDeW1lmes0h5DAIpaQgggZNZRRgYUYrRopJtK0H/fwDzr+FLlkcpXByLGAKlRIjh/8D353axYmJ9ykUBwIvNj2xzAQ3AWaddv+Prbt5gngfwautLa/2gBmPkmvt7XoEdC/DVxctzV5D7jcASJPumRIjuSnKRQKwPsZfVMOGLgFetbc3lr7OH0AMtRV8gY4OARGipS97vHu7s7e/j3T6u8Htlxywqi417gAAAAGYktHRAD/AP8A/6C9p5MAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQflBRgLMRuXffEuAAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAASFJREFUWMNjYBgJ4OnzF/+L61v+DzqHPX/56n9gfNp/c3f//zGZ+f/ff/yoRA1zGanhsKyyGoZnL17CxVSVFBgmdzQpC/Lz3xswx2FzGDUdyEgLh1HLgYy0chg1HMhIS4dR6kBGWjuMEgcy0sNh5DqQkV4OI8eBjPR0GKkOZKS3w0hxIONAOIxYBzIOlMOIcSDjQDqMkAMZB9ph+BzIOBgchsuBjIPFYdgcyDiYHIbuQJLqVmvvoP9//vwl21JZaSmGNfOmE20n02Dul4w6btRxo44bddxwdxwLKYpjQgIZ/v77R7ZlAnx8DGvmTWcYBaNgFIyCUYCj33r01Jn/RbXNdHfIspmTGJQV5BlH69Zh7zis3bQnz17QfSZGRkoCwy0A8U7lE3jFbPUAAAAASUVORK5CYII='
     };
 
+
+
+    /***
+     *
+     * ###########################################################
+     *                         USING PLUGIN
+     * ###########################################################
+     *
+     */
+
     /**
      *  Virtual keyboard init function
+     *  After this function, the virtual keyboard will appear when
+     *  the user focus some input
      */
     window.VsVirtualKeyboard({
       wrpClass: 'vs-virtual-keyboard-wrp',

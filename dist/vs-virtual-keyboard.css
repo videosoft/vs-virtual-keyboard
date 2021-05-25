@@ -34,13 +34,14 @@
   font-weight: 300;
   margin: 16px;
   transition: 0.12s;
+  position: relative;
 }
 
 .vs-virtual-kb-row-button:active,
 .vs-virtual-kb-row-button-with-icon:active {
-  background: #007bfa;
-  color: #FFF;
-  border-color: #333;
+  color: #000;
+  border-color: rgba(0, 0, 0, 0.7);
+  font-size: 28px;
 }
 
 .vs-virtual-kb-key-ZXNwYedv {
@@ -59,5 +60,18 @@
   width: 12%;
   background: #d4d8de;
   border: 1px solid #cfcfd0;
+}
+
+
+.vs-virtual-kb-row-button-variations {
+  position: absolute;
+  width: 460px;
+  background: #FFF;
+  z-index: 99999;
+  top: -125px;
+  left: -230px;
+  border-radius: 8px;
+  border: 1px solid #ACACAC;
+  border-bottom: 3px solid #ACACAC;
 }
 

@@ -6,4 +6,5 @@ export default interface KeyboardState {
     mode?: string;
     input?: any;
     config?: KeyboardConfig;
+    variationShow?: KeyboardKey;
 }

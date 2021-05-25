@@ -30,6 +30,14 @@
         return __assign.apply(this, arguments);
     };
 
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    }
+
     var kdToggle = (function (state, params) {
         var _a;
         if (!params.input) {
@@ -46,6 +54,14 @@
         return layoutJson.map(function (l) { return l.map(function (symbolKey) {
             if (typeof symbolKey === 'string') {
                 return { symbol: symbolKey };
+            }
+            if (symbolKey.variations) {
+                return __assign(__assign({}, symbolKey), { variations: symbolKey.variations.map(function (subSymbol) {
+                        if (typeof subSymbol === 'string') {
+                            return { symbol: subSymbol };
+                        }
+                        return __assign({}, subSymbol);
+                    }) });
             }
             return __assign({}, symbolKey);
         }); });
@@ -64,17 +80,25 @@
     //# sourceMappingURL=keyboard-mode-shift.js.map
 
     var kbTyped = (function (state, params) {
-        return __assign({}, state);
+        return __assign(__assign({}, state), { variationShow: null });
     });
     //# sourceMappingURL=keyboard-typed.js.map
+
+    var variationToggle = (function (state, params) {
+        var key = params.key;
+        return __assign(__assign({}, state), { variationShow: key });
+    });
+    //# sourceMappingURL=keyboard-variation-toggle.js.map
 
     var ACTION_KB_TOGGLE = 0;
     var ACTION_MODE_TOGGLE = 2;
     var ACTION_KB_TYPED = 3;
+    var ACTION_VARIATION_TOGGLE = 4;
     var actions = new Map();
     actions.set(ACTION_KB_TOGGLE, kdToggle);
     actions.set(ACTION_MODE_TOGGLE, kdModeShift);
     actions.set(ACTION_KB_TYPED, kbTyped);
+    actions.set(ACTION_VARIATION_TOGGLE, variationToggle);
     //# sourceMappingURL=index.js.map
 
     var h = function (tagName, classList, children, options) {
@@ -95,21 +119,27 @@
     //# sourceMappingURL=create-element.js.map
 
     function addKeyboardKeyListener(buttonEl, config, action, key, state) {
-        var pressedOn = 0;
-        buttonEl.addEventListener('mousedown', function (event) {
+        var variationsTimeout;
+        var cancelTouchEnd = false;
+        buttonEl.addEventListener('touchstart', function (event) {
+            cancelTouchEnd = false;
             if (!state.input) {
                 return;
             }
-            pressedOn = (new Date).getTime();
+            variationsTimeout = setTimeout(function () {
+                cancelTouchEnd = true;
+                if (key.variations && key.variations.length) {
+                    action(ACTION_VARIATION_TOGGLE, { key: key });
+                }
+            }, 1e3);
         });
-        buttonEl.addEventListener('mouseup', function (event) { return setTimeout(function () {
+        buttonEl.addEventListener('touchend', function (event) { return setTimeout(function () {
             var _a, _b, _c, _d;
-            if (!state.input) {
+            variationsTimeout && clearTimeout(variationsTimeout);
+            if (cancelTouchEnd) {
                 return;
             }
-            var pressedTime = (new Date).getTime() - pressedOn;
-            if (pressedTime > (config.modePressedOnTimeout || 2500)) {
-                // TODO
+            if (!state.input) {
                 return;
             }
             state.input = state.input || {};
@@ -161,8 +191,9 @@
         var rows = state.layout.map(function (l) {
             // Row buttons format
             var buttons = l.map(function (kButton) {
-                var buttonEl = (function () {
-                    var _a;
+                var createButton;
+                var subButtonsEl = [];
+                var buttonEl = (createButton = function (kButton) {
                     // Button with icon
                     if (kButton.base64Icon) {
                         return h('button', 'vs-virtual-kb-row-button-with-icon', [
@@ -172,31 +203,40 @@
                             })
                         ]);
                     }
-                    // Common char button
-                    if (!state.mode) {
-                        return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
-                    }
-                    // Button without variations
-                    if (!((_a = kButton.variations) === null || _a === void 0 ? void 0 : _a.length)) {
-                        return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
-                    }
-                    // Button variation
-                    var variation = kButton.variations.find(function (v) { return v.mode === state.mode; });
-                    if (!variation) {
-                        return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
-                    }
-                    // Variation button icon
-                    if (variation.key.base64Icon) {
-                        return h('button', 'vs-virtual-kb-row-button-with-icon', [
-                            h('img', 'vs-virtual-kb-row-button-with-icon-icon', [], {
-                                src: kButton.base64Icon,
-                                alt: kButton.symbol
-                            })
+                    // Button variations popover
+                    if (state.variationShow === kButton) {
+                        return h('button', 'vs-virtual-kb-row-button', [
+                            (function () {
+                                // Creates the variation popover element
+                                var variationsRow = h('div', 'vs-virtual-kb-row-button-variations', __spreadArrays(((kButton.variations || []).map(function (variation) {
+                                    var button = createButton(variation);
+                                    subButtonsEl.push({ key: variation, button: button });
+                                    return button;
+                                }))));
+                                // Stop event propagation to the parent button
+                                variationsRow.addEventListener('touchstart', function (e) { return e.stopImmediatePropagation(); });
+                                variationsRow.addEventListener('touchend', function (e) { return e.stopImmediatePropagation(); });
+                                // Popover extreme position adjust
+                                setTimeout(function () {
+                                    var width = window.innerWidth;
+                                    var coords = variationsRow.getBoundingClientRect();
+                                    if (coords.x < 300) {
+                                        variationsRow.style.marginLeft = '200px';
+                                        return;
+                                    }
+                                    if ((width - coords.x) < 300) {
+                                        variationsRow.style.marginLeft = '-200px';
+                                        return;
+                                    }
+                                }, 200);
+                                // Returns el
+                                return variationsRow;
+                            })(),
+                            h('span', '', [], kButton.symbol)
                         ]);
                     }
-                    // Variation symbol
-                    return h('button', 'vs-virtual-kb-row-button', [], variation.key.symbol);
-                })();
+                    return h('button', 'vs-virtual-kb-row-button', [], kButton.symbol);
+                })(kButton);
                 // Applies key specific class
                 var hash;
                 try {
@@ -208,14 +248,23 @@
                 buttonEl.classList.add("vs-virtual-kb-key-" + hash.split('=').join(''));
                 // Adding click listeners
                 addKeyboardKeyListener(buttonEl, config, action, kButton, state);
+                subButtonsEl.forEach(function (b) { return addKeyboardKeyListener(b.button, config, action, b.key, state); });
                 return buttonEl;
             });
             // Row buttons div
             return h('div', 'vs-virtual-kb-row', buttons);
         });
-        return h('div', "vs-virtual-kb " + (config.wrpClass || '') + " " + (state.input ? 'vs-virtual-kb-opened' : 'vs-virtual-kb-closed'), rows);
+        // App main div
+        var appDiv = h('div', "vs-virtual-kb " + (config.wrpClass || '') + " " + (state.input ? 'vs-virtual-kb-opened' : 'vs-virtual-kb-closed'), rows);
+        // No context menu
+        appDiv.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            state.input.focus();
+        });
+        // Variation close
+        appDiv.addEventListener('click', function (e) { return state.variationShow && action(ACTION_VARIATION_TOGGLE, {}); });
+        return appDiv;
     });
-    //# sourceMappingURL=keyboard.js.map
 
     var keyboardEl;
     window.VsVirtualKeyboard = function (options) {
@@ -255,12 +304,7 @@
                 }
             });
         };
-        /**
-         * Focus-in and Focus-out input and toggle keyboard
-         */
-        var focusOutTimeout;
         window.addEventListener('focusin', function (event) {
-            focusOutTimeout && clearTimeout(focusOutTimeout);
             var action = actions.get(ACTION_KB_TOGGLE);
             if (action) {
                 setTimeout(function () {
@@ -270,17 +314,18 @@
             }
         });
         window.addEventListener('focusout', function () {
-            focusOutTimeout = setTimeout(function () {
-                var action = actions.get(ACTION_KB_TOGGLE);
-                if (action) {
-                    var state = action(currentState, { input: null });
-                    render(state);
-                }
-            }, 600);
+            // focusOutTimeout = setTimeout(() => {
+            //   const action = actions.get(ACTION_KB_TOGGLE);
+            //   if (action) {
+            //     const state: KeyboardState = action(currentState, { input: null });
+            //     render(state);
+            //   }
+            // }, 600);
         });
         // First render
         render(currentState);
     };
+    //# sourceMappingURL=vs-virtual-keyboard.js.map
 
 })));
 //# sourceMappingURL=vs-virtual-keyboard.umd.js.map

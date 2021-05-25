@@ -6,5 +6,6 @@ declare const _default: (state: KeyboardState, params: any) => {
     mode?: string | undefined;
     input?: any;
     config?: import("../types/kb-config").default | undefined;
+    variationShow?: KeyboardKey | undefined;
 };
 export default _default;
