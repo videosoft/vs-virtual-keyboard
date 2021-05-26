@@ -5,7 +5,7 @@ import KeyboardConfig from './types/kb-config'
 import KeyboardState from './types/kb-state'
 
 let keyboardEl: any
-;(window as any).VsVirtualKeyboard = (options: KeyboardConfig) => {
+const VsVirtualKeyboard = (options: KeyboardConfig) => {
   const config: KeyboardConfig = { ...options }
 
   // Initial state
@@ -72,3 +72,6 @@ let keyboardEl: any
   // First render
   render(currentState)
 }
+
+;(window as any).VsVirtualKeyboard = VsVirtualKeyboard
+export default VsVirtualKeyboard
