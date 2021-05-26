@@ -1,9 +1,9 @@
 import KeyboardState from "../types/kb-state";
 declare const _default: (state: KeyboardState, params: any) => {
+    input: any;
     layoutName?: string | undefined;
     layout?: import("../types/kb-key").default[][] | undefined;
     mode?: string | undefined;
-    input?: any;
     config?: import("../types/kb-config").default | undefined;
     variationShow?: import("../types/kb-key").default | undefined;
 };

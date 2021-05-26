@@ -5,7 +5,6 @@ import KeyboardConfig from './types/kb-config'
 import KeyboardState from './types/kb-state'
 
 let keyboardEl: any
-
 ;(window as any).VsVirtualKeyboard = (options: KeyboardConfig) => {
   const config: KeyboardConfig = { ...options }
 
@@ -57,17 +56,17 @@ let keyboardEl: any
       setTimeout(() => {
         const state: KeyboardState = action(currentState, { input: event.target })
         render(state)
-      }, 100)
+      }, 50)
     }
   })
   window.addEventListener('focusout', () => {
-    // focusOutTimeout = setTimeout(() => {
-    //   const action = actions.get(ACTION_KB_TOGGLE);
-    //   if (action) {
-    //     const state: KeyboardState = action(currentState, { input: null });
-    //     render(state);
-    //   }
-    // }, 600);
+    focusOutTimeout = setTimeout(() => {
+      const action = actions.get(ACTION_KB_TOGGLE)
+      if (action) {
+        const state: KeyboardState = action(currentState, { input: null })
+        render(state)
+      }
+    }, 600)
   })
 
   // First render

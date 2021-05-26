@@ -38,27 +38,29 @@ var kdToggle = (function (state, params) {
         return __assign(__assign({}, state), { input: null });
     }
     if ((((_a = state.config) === null || _a === void 0 ? void 0 : _a.availableInTypes) || ['text']).indexOf(params.input.type || '') === -1) {
-        return __assign({}, state);
+        return __assign(__assign({}, state), { input: null });
     }
     return __assign(__assign({}, state), { input: params.input });
 });
 //# sourceMappingURL=keyboard-toggle.js.map
 
 function getLayoutTable(layoutJson) {
-    return layoutJson.map(function (l) { return l.map(function (symbolKey) {
-        if (typeof symbolKey === 'string') {
-            return { symbol: symbolKey };
-        }
-        if (symbolKey.variations) {
-            return __assign(__assign({}, symbolKey), { variations: symbolKey.variations.map(function (subSymbol) {
-                    if (typeof subSymbol === 'string') {
-                        return { symbol: subSymbol };
-                    }
-                    return __assign({}, subSymbol);
-                }) });
-        }
-        return __assign({}, symbolKey);
-    }); });
+    return layoutJson.map(function (l) {
+        return l.map(function (symbolKey) {
+            if (typeof symbolKey === 'string') {
+                return { symbol: symbolKey };
+            }
+            if (symbolKey.variations) {
+                return __assign(__assign({}, symbolKey), { variations: symbolKey.variations.map(function (subSymbol) {
+                        if (typeof subSymbol === 'string') {
+                            return { symbol: subSymbol };
+                        }
+                        return __assign({}, subSymbol);
+                    }) });
+            }
+            return __assign({}, symbolKey);
+        });
+    });
 }
 var kdModeShift = (function (state, params) {
     var _a, _b, _c;
@@ -127,47 +129,49 @@ function addKeyboardKeyListener(buttonEl, config, action, key, state) {
             }
         }, 1e3);
     });
-    buttonEl.addEventListener('touchend', function (event) { return setTimeout(function () {
-        var _a, _b, _c, _d;
-        variationsTimeout && clearTimeout(variationsTimeout);
-        if (cancelTouchEnd) {
-            return;
-        }
-        if (!state.input) {
-            return;
-        }
-        state.input = state.input || {};
-        // Keyup optional listener
-        if (config.onKeyUp) {
-            var newVal = config.onKeyUp((_a = state.input) === null || _a === void 0 ? void 0 : _a.value, key);
-            state.input.value = newVal || '';
-        }
-        // Keydown optional listener
-        if (config.onKeyDown) {
-            var newVal = config.onKeyDown((_b = state.input) === null || _b === void 0 ? void 0 : _b.value, key);
-            state.input.value = newVal || '';
-        }
-        // OnChange optional listener
-        if (config.onChange) {
-            var newVal = config.onChange((_c = state.input) === null || _c === void 0 ? void 0 : _c.value, key);
-            state.input.value = newVal || '';
-        }
-        // Key custom action
-        if (key.action) {
-            var newVal = key.action((_d = state.input) === null || _d === void 0 ? void 0 : _d.value);
-            state.input.value = newVal || '';
-            return;
-        }
-        else if (key.layoutShift) {
-            // Layout shift key
-            action(ACTION_MODE_TOGGLE, { layoutName: key.layoutShift });
-            return;
-        }
-        else {
-            state.input.value = (state.input.value + '') + key.symbol;
-        }
-        action(ACTION_KB_TYPED, {});
-    }, 200); });
+    buttonEl.addEventListener('touchend', function (event) {
+        return setTimeout(function () {
+            var _a, _b, _c, _d;
+            variationsTimeout && clearTimeout(variationsTimeout);
+            if (cancelTouchEnd) {
+                return;
+            }
+            if (!state.input) {
+                return;
+            }
+            state.input = state.input || {};
+            // Keyup optional listener
+            if (config.onKeyUp) {
+                var newVal = config.onKeyUp((_a = state.input) === null || _a === void 0 ? void 0 : _a.value, key);
+                state.input.value = newVal || '';
+            }
+            // Keydown optional listener
+            if (config.onKeyDown) {
+                var newVal = config.onKeyDown((_b = state.input) === null || _b === void 0 ? void 0 : _b.value, key);
+                state.input.value = newVal || '';
+            }
+            // OnChange optional listener
+            if (config.onChange) {
+                var newVal = config.onChange((_c = state.input) === null || _c === void 0 ? void 0 : _c.value, key);
+                state.input.value = newVal || '';
+            }
+            // Key custom action
+            if (key.action) {
+                var newVal = key.action((_d = state.input) === null || _d === void 0 ? void 0 : _d.value);
+                state.input.value = newVal || '';
+                return;
+            }
+            else if (key.layoutShift) {
+                // Layout shift key
+                action(ACTION_MODE_TOGGLE, { layoutName: key.layoutShift });
+                return;
+            }
+            else {
+                state.input.value = state.input.value + '' + key.symbol;
+            }
+            action(ACTION_KB_TYPED, {});
+        }, 200);
+    });
 }
 var keyboard = (function (state, config, action) {
     var _a;
@@ -202,11 +206,11 @@ var keyboard = (function (state, config, action) {
                     return h('button', 'vs-virtual-kb-row-button', [
                         (function () {
                             // Creates the variation popover element
-                            var variationsRow = h('div', 'vs-virtual-kb-row-button-variations', __spreadArrays(((kButton.variations || []).map(function (variation) {
+                            var variationsRow = h('div', 'vs-virtual-kb-row-button-variations', __spreadArrays((kButton.variations || []).map(function (variation) {
                                 var button = createButton(variation);
                                 subButtonsEl.push({ key: variation, button: button });
                                 return button;
-                            }))));
+                            })));
                             // Stop event propagation to the parent button
                             variationsRow.addEventListener('touchstart', function (e) { return e.stopImmediatePropagation(); });
                             variationsRow.addEventListener('touchend', function (e) { return e.stopImmediatePropagation(); });
@@ -218,7 +222,7 @@ var keyboard = (function (state, config, action) {
                                     variationsRow.style.marginLeft = '200px';
                                     return;
                                 }
-                                if ((width - coords.x) < 300) {
+                                if (width - coords.x < 300) {
                                     variationsRow.style.marginLeft = '-200px';
                                     return;
                                 }
@@ -249,7 +253,7 @@ var keyboard = (function (state, config, action) {
         return h('div', 'vs-virtual-kb-row', buttons);
     });
     // App main div
-    var appDiv = h('div', "vs-virtual-kb " + (config.wrpClass || '') + " " + (state.input ? 'vs-virtual-kb-opened' : 'vs-virtual-kb-closed'), rows);
+    var appDiv = h('div', "vs-virtual-kb " + (config.wrpClass || '') + " vs-virtual-kb-closed" + (state.input ? 'vs-virtual-kb-opened' : ''), rows);
     // No context menu
     appDiv.addEventListener('contextmenu', function (e) {
         e.preventDefault();
@@ -259,6 +263,7 @@ var keyboard = (function (state, config, action) {
     appDiv.addEventListener('click', function (e) { return state.variationShow && action(ACTION_VARIATION_TOGGLE, {}); });
     return appDiv;
 });
+//# sourceMappingURL=keyboard.js.map
 
 var keyboardEl;
 window.VsVirtualKeyboard = function (options) {
@@ -298,26 +303,30 @@ window.VsVirtualKeyboard = function (options) {
             }
         });
     };
+    /**
+     * Focus-in and Focus-out input and toggle keyboard
+     */
+    var focusOutTimeout;
     window.addEventListener('focusin', function (event) {
+        focusOutTimeout && clearTimeout(focusOutTimeout);
         var action = actions.get(ACTION_KB_TOGGLE);
         if (action) {
             setTimeout(function () {
                 var state = action(currentState, { input: event.target });
                 render(state);
-            }, 100);
+            }, 50);
         }
     });
     window.addEventListener('focusout', function () {
-        // focusOutTimeout = setTimeout(() => {
-        //   const action = actions.get(ACTION_KB_TOGGLE);
-        //   if (action) {
-        //     const state: KeyboardState = action(currentState, { input: null });
-        //     render(state);
-        //   }
-        // }, 600);
+        focusOutTimeout = setTimeout(function () {
+            var action = actions.get(ACTION_KB_TOGGLE);
+            if (action) {
+                var state = action(currentState, { input: null });
+                render(state);
+            }
+        }, 600);
     });
     // First render
     render(currentState);
 };
-//# sourceMappingURL=vs-virtual-keyboard.js.map
 //# sourceMappingURL=vs-virtual-keyboard.es5.js.map
