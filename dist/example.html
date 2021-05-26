@@ -23,13 +23,16 @@
     <input type="email" class="my-input">
   </p>
 
-  <!-- Imports the querty layout json -->
-  <script src="vs-default-keyboard.js"></script>
 
   <!-- Imports the keyboard plugin -->
-  <script src="vs-virtual-keyboard.es5.js"></script>
+  <script type="module">
 
-  <script>
+    // Imports the keyboard layout json
+    // In is fully customizable, open the file and follow the instructions to customize
+    import vsDefaultKeyboard from './vs-default-keyboard.js';
+
+    // Imports the lib
+    import VsVirtualKeyboard from './vs-virtual-keyboard.es5.js';
 
     /**
      *  ############## Virtual keyboard init function ######################
@@ -37,7 +40,7 @@
      *  After this function, the virtual keyboard will appear when
      *  the user focus some input
      */
-    window.VsVirtualKeyboard({
+    VsVirtualKeyboard({
 
       // Keyboard wrapper class for custom css
       wrpClass: 'vs-virtual-keyboard-wrp',
