@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "src/vs-virtual-keyboard.ts",
+  "main": "dist/vs-virtual-keyboard.umd.js",
   "module": "dist/vs-virtual-keyboard.es5.js",
-  "typings": "dist/types/kb-config.ts",
+  "typings": "dist/types/vs-virtual-keyboard.d.ts",
   "files": [
     "dist"
   ],
