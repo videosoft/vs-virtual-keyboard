@@ -1,6 +1,6 @@
 import actions from './actions'
 import { ACTION_KB_TOGGLE, ACTION_MODE_TOGGLE } from './actions'
-import keyboard from './components/keyboard'
+import keyboard, { getPreventFocusOut } from './components/keyboard'
 import KeyboardConfig from './types/kb-config'
 import KeyboardState from './types/kb-state'
 
@@ -16,6 +16,10 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
    */
   const render = (state: KeyboardState) => {
     currentState = state
+
+    /**
+     * Keyboard lifecycle
+     */
     const newEl = keyboard(state, config, (actionId: number, params: any) => {
       const action = actions.get(actionId)
       if (!action) {
@@ -35,8 +39,13 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
       }
       render(newState)
     })
+
     keyboardEl ? keyboardEl.replaceWith(newEl) : document.body.appendChild(newEl)
     keyboardEl = newEl
+
+    /**
+     * Adds default click handler to the new element
+     */
     newEl.addEventListener('click', event => {
       event.preventDefault()
       if (state.input) {
@@ -46,7 +55,7 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
   }
 
   /**
-   * Focus-in and Focus-out input and toggle keyboard
+   * Focus-in and toggle keyboard
    */
   let focusOutTimeout: any
   window.addEventListener('focusin', (event: any) => {
@@ -56,10 +65,23 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
       setTimeout(() => {
         const state: KeyboardState = action(currentState, { input: event.target })
         render(state)
-      }, 50)
+      }, 10)
     }
   })
-  window.addEventListener('focusout', () => {
+
+  /**
+   * Focus-out interceptor and hide keyboard
+   */
+  window.addEventListener('focusout', e => {
+
+    // Clicking on kb button, input focus out, returns it
+    if (getPreventFocusOut()) {
+      currentState.input.focus();
+      e.preventDefault();
+      return;
+    }
+
+    // Focus out, hide keyboard
     focusOutTimeout = setTimeout(() => {
       const action = actions.get(ACTION_KB_TOGGLE)
       if (action) {

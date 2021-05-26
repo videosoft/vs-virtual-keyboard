@@ -3,6 +3,14 @@ import KeyboardConfig from '../types/kb-config'
 import KeyboardKey from '../types/kb-key'
 import KeyboardState from '../types/kb-state'
 import { h } from '../utils/create-element'
+import isTouchDevice from '../utils/is-touch'
+
+
+let preventFocusOut = false
+let cancelPullout = false
+let variationsTimeout: any
+export const getPreventFocusOut = () => preventFocusOut;
+
 
 function addKeyboardKeyListener(
   buttonEl: any,
@@ -11,25 +19,36 @@ function addKeyboardKeyListener(
   key: KeyboardKey,
   state: KeyboardState
 ) {
-  let variationsTimeout: any
   let cancelTouchEnd = false
 
-  buttonEl.addEventListener('touchstart', (event: any) => {
+  const isTouch = isTouchDevice()
+  const eventTrigger = isTouch ? 'touchstart' : 'mousedown'
+  const eventPullout = isTouch ? 'touchend' : 'mouseup'
+
+  buttonEl.addEventListener(eventTrigger, (event: any) => {
     cancelTouchEnd = false
     if (!state.input) {
       return
     }
+    variationsTimeout && clearTimeout(variationsTimeout)
     variationsTimeout = setTimeout(() => {
       cancelTouchEnd = true
       if (key.variations && key.variations.length) {
         action(ACTION_VARIATION_TOGGLE, { key })
+        cancelPullout = true
+        setTimeout(() => cancelPullout = false, 400)
       }
     }, 1e3)
   })
 
-  buttonEl.addEventListener('touchend', (event: any) =>
+  buttonEl.addEventListener(eventPullout, (event: any) => {
+    if (cancelPullout) {
+      return
+    }
+
+    variationsTimeout && clearTimeout(variationsTimeout)
+
     setTimeout(() => {
-      variationsTimeout && clearTimeout(variationsTimeout)
 
       if (cancelTouchEnd) {
         return
@@ -74,10 +93,12 @@ function addKeyboardKeyListener(
 
       action(ACTION_KB_TYPED, {})
     }, 200)
-  )
+  });
 }
 
+
 export default (state: KeyboardState, config: KeyboardConfig, action: Function) => {
+
   // Gets the default layout for first
   if (!state.layout) {
     const layouts: any = config.layouts || {}
@@ -91,11 +112,16 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
 
   // Kb rows format
   const rows = state.layout.map(l => {
+
     // Row buttons format
     const buttons = l.map(kButton => {
+
       let createButton: Function
       let subButtonsEl: Array<{ key: KeyboardKey; button: any }> = []
+
+      // Button render function
       const buttonEl: any = (createButton = (kButton: KeyboardKey) => {
+
         // Button with icon
         if (kButton.base64Icon) {
           return h('button', 'vs-virtual-kb-row-button-with-icon', [
@@ -110,6 +136,7 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
         if (state.variationShow === kButton) {
           return h('button', 'vs-virtual-kb-row-button', [
             (() => {
+
               // Creates the variation popover element
               const variationsRow = h('div', 'vs-virtual-kb-row-button-variations', [
                 ...(kButton.variations || []).map(variation => {
@@ -183,7 +210,21 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
   })
 
   // Variation close
-  appDiv.addEventListener('click', e => state.variationShow && action(ACTION_VARIATION_TOGGLE, {}))
+  appDiv.addEventListener('click', e => {
+    if (state.variationShow) {
+      action(ACTION_VARIATION_TOGGLE, {})
+    }
+  })
+
+  // Prevent focus out notification
+  let preventFocusOutTimeout: any;
+  appDiv.addEventListener('mousedown', () => {
+    preventFocusOut = true;
+    if (preventFocusOutTimeout) {
+      clearTimeout(preventFocusOutTimeout);
+    }
+    preventFocusOutTimeout = setTimeout(() => preventFocusOut = false, 50);
+  });
 
   return appDiv
 }

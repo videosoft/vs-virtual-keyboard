@@ -1,7 +1,7 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    (factory());
+    (global.vsVirtualKeyboard = factory());
 }(this, (function () { 'use strict';
 
     /*! *****************************************************************************
@@ -120,25 +120,42 @@
     };
     //# sourceMappingURL=create-element.js.map
 
+    var isTouchDevice = function () { return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0)); };
+    //# sourceMappingURL=is-touch.js.map
+
+    var preventFocusOut = false;
+    var cancelPullout = false;
+    var variationsTimeout;
+    var getPreventFocusOut = function () { return preventFocusOut; };
     function addKeyboardKeyListener(buttonEl, config, action, key, state) {
-        var variationsTimeout;
         var cancelTouchEnd = false;
-        buttonEl.addEventListener('touchstart', function (event) {
+        var isTouch = isTouchDevice();
+        var eventTrigger = isTouch ? 'touchstart' : 'mousedown';
+        var eventPullout = isTouch ? 'touchend' : 'mouseup';
+        buttonEl.addEventListener(eventTrigger, function (event) {
             cancelTouchEnd = false;
             if (!state.input) {
                 return;
             }
+            variationsTimeout && clearTimeout(variationsTimeout);
             variationsTimeout = setTimeout(function () {
                 cancelTouchEnd = true;
                 if (key.variations && key.variations.length) {
                     action(ACTION_VARIATION_TOGGLE, { key: key });
+                    cancelPullout = true;
+                    setTimeout(function () { return cancelPullout = false; }, 400);
                 }
             }, 1e3);
         });
-        buttonEl.addEventListener('touchend', function (event) {
-            return setTimeout(function () {
+        buttonEl.addEventListener(eventPullout, function (event) {
+            if (cancelPullout) {
+                return;
+            }
+            variationsTimeout && clearTimeout(variationsTimeout);
+            setTimeout(function () {
                 var _a, _b, _c, _d;
-                variationsTimeout && clearTimeout(variationsTimeout);
                 if (cancelTouchEnd) {
                     return;
                 }
@@ -197,6 +214,7 @@
             var buttons = l.map(function (kButton) {
                 var createButton;
                 var subButtonsEl = [];
+                // Button render function
                 var buttonEl = (createButton = function (kButton) {
                     // Button with icon
                     if (kButton.base64Icon) {
@@ -266,13 +284,25 @@
             state.input.focus();
         });
         // Variation close
-        appDiv.addEventListener('click', function (e) { return state.variationShow && action(ACTION_VARIATION_TOGGLE, {}); });
+        appDiv.addEventListener('click', function (e) {
+            if (state.variationShow) {
+                action(ACTION_VARIATION_TOGGLE, {});
+            }
+        });
+        // Prevent focus out notification
+        var preventFocusOutTimeout;
+        appDiv.addEventListener('mousedown', function () {
+            preventFocusOut = true;
+            if (preventFocusOutTimeout) {
+                clearTimeout(preventFocusOutTimeout);
+            }
+            preventFocusOutTimeout = setTimeout(function () { return preventFocusOut = false; }, 50);
+        });
         return appDiv;
     });
-    //# sourceMappingURL=keyboard.js.map
 
     var keyboardEl;
-    window.VsVirtualKeyboard = function (options) {
+    var VsVirtualKeyboard = function (options) {
         var config = __assign({}, options);
         // Initial state
         var currentState = { config: config };
@@ -281,6 +311,9 @@
          */
         var render = function (state) {
             currentState = state;
+            /**
+             * Keyboard lifecycle
+             */
             var newEl = keyboard(state, config, function (actionId, params) {
                 var action = actions.get(actionId);
                 if (!action) {
@@ -302,6 +335,9 @@
             });
             keyboardEl ? keyboardEl.replaceWith(newEl) : document.body.appendChild(newEl);
             keyboardEl = newEl;
+            /**
+             * Adds default click handler to the new element
+             */
             newEl.addEventListener('click', function (event) {
                 event.preventDefault();
                 if (state.input) {
@@ -310,7 +346,7 @@
             });
         };
         /**
-         * Focus-in and Focus-out input and toggle keyboard
+         * Focus-in and toggle keyboard
          */
         var focusOutTimeout;
         window.addEventListener('focusin', function (event) {
@@ -320,10 +356,20 @@
                 setTimeout(function () {
                     var state = action(currentState, { input: event.target });
                     render(state);
-                }, 50);
+                }, 10);
             }
         });
-        window.addEventListener('focusout', function () {
+        /**
+         * Focus-out interceptor and hide keyboard
+         */
+        window.addEventListener('focusout', function (e) {
+            // Clicking on kb button, input focus out, returns it
+            if (getPreventFocusOut()) {
+                currentState.input.focus();
+                e.preventDefault();
+                return;
+            }
+            // Focus out, hide keyboard
             focusOutTimeout = setTimeout(function () {
                 var action = actions.get(ACTION_KB_TOGGLE);
                 if (action) {
@@ -335,6 +381,10 @@
         // First render
         render(currentState);
     };
+    window.VsVirtualKeyboard = VsVirtualKeyboard;
+    //# sourceMappingURL=vs-virtual-keyboard.js.map
+
+    return VsVirtualKeyboard;
 
 })));
 //# sourceMappingURL=vs-virtual-keyboard.umd.js.map

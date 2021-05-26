@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/vs-virtual-keyboard.umd.js",
+  "main": "src/vs-virtual-keyboard.ts",
   "module": "dist/vs-virtual-keyboard.es5.js",
-  "typings": "dist/types/vs-virtual-keyboard.d.ts",
+  "typings": "dist/types/kb-config.ts",
   "files": [
     "dist"
   ],
@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.0.0"
   },
   "scripts": {
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
@@ -73,7 +73,6 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
-    "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
     "colors": "^1.3.2",
     "commitizen": "^3.0.0",
@@ -82,8 +81,6 @@
     "cz-conventional-changelog": "^2.1.0",
     "http-server": "^0.12.3",
     "husky": "^1.0.1",
-    "jest": "^23.6.0",
-    "jest-config": "^23.6.0",
     "lint-staged": "^8.0.0",
     "lodash.camelcase": "^4.3.0",
     "prettier": "^1.14.3",
@@ -108,6 +105,8 @@
     "typescript": "^3.0.3"
   },
   "dependencies": {
-    "tslib": "^2.2.0"
+    "@types/virtual-dom": "^2.1.0",
+    "tslib": "^2.2.0",
+    "virtual-dom": "^2.1.1"
   }
 }

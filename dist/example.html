@@ -56,11 +56,11 @@
         // Auto capitalization
         if (((keyboardState.input || {}).value || '').length === 1 &&
              keyboardState.layoutName === 'uppercase-querty') {
-          if (keyboardState.input.dataCapitalized) {
+          if (keyboardState.input.dataset.capitalized) {
             return keyboardState;
           }
           keyboardState.layoutName = 'lowercase-querty';
-          keyboardState.input.dataCapitalized = '1';
+          keyboardState.input.dataset.capitalized = '1';
         }
         return keyboardState;
       },

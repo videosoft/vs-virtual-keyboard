@@ -47,12 +47,7 @@
         return value + ' ';
       }
     },
-    {
-      symbol: '@',
-      action(value) {
-        return value;
-      }
-    },
+    { symbol: '@' },
     {
       symbol: 'retorno',
       action(value) {
@@ -95,12 +90,7 @@ const advancedMathSymbolsKb = [
         return value + ' ';
       }
     },
-    {
-      symbol: '@',
-      action(value) {
-        return value;
-      }
-    },
+    { symbol: '@' },
     {
       symbol: 'retorno',
       action(value) {
@@ -172,12 +162,7 @@ const querty = [
         return value + ' ';
       }
     },
-    {
-      symbol: '@',
-      action(value) {
-        return value;
-      }
-    },
+    { symbol: '@' },
     {
       symbol: 'retorno',
       action(value) {
