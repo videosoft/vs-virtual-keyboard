@@ -122,7 +122,6 @@ var isTouchDevice = function () { return (('ontouchstart' in window) ||
 var preventFocusOut = false;
 var cancelPullout = false;
 var variationsTimeout;
-var getPreventFocusOut = function () { return preventFocusOut; };
 function addKeyboardKeyListener(buttonEl, config, action, key, state) {
     var cancelTouchEnd = false;
     var isTouch = isTouchDevice();
@@ -133,6 +132,12 @@ function addKeyboardKeyListener(buttonEl, config, action, key, state) {
         if (!state.input) {
             return;
         }
+        event.target.style.backgroundColor = '#555';
+        event.target.style.color = '#EFEFEF';
+        setTimeout(function () {
+            delete event.target.style;
+            delete event.target.style;
+        }, 600);
         variationsTimeout && clearTimeout(variationsTimeout);
         variationsTimeout = setTimeout(function () {
             cancelTouchEnd = true;
@@ -340,12 +345,7 @@ var VsVirtualKeyboard = function (options) {
             }
         });
     };
-    /**
-     * Focus-in and toggle keyboard
-     */
-    var focusOutTimeout;
     window.addEventListener('focusin', function (event) {
-        focusOutTimeout && clearTimeout(focusOutTimeout);
         var action = actions.get(ACTION_KB_TOGGLE);
         if (action) {
             setTimeout(function () {
@@ -359,19 +359,19 @@ var VsVirtualKeyboard = function (options) {
      */
     window.addEventListener('focusout', function (e) {
         // Clicking on kb button, input focus out, returns it
-        if (getPreventFocusOut()) {
-            currentState.input.focus();
-            e.preventDefault();
-            return;
-        }
-        // Focus out, hide keyboard
-        focusOutTimeout = setTimeout(function () {
-            var action = actions.get(ACTION_KB_TOGGLE);
-            if (action) {
-                var state = action(currentState, { input: null });
-                render(state);
-            }
-        }, 600);
+        // if (getPreventFocusOut()) {
+        //   currentState.input && currentState.input.focus();
+        //   e.preventDefault();
+        //   return;
+        // }
+        // // Focus out, hide keyboard
+        // focusOutTimeout = setTimeout(() => {
+        //   const action = actions.get(ACTION_KB_TOGGLE)
+        //   if (action) {
+        //     const state: KeyboardState = action(currentState, { input: null })
+        //     render(state)
+        //   }
+        // }, 600)
     });
     // First render
     render(currentState);

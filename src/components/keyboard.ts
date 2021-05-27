@@ -30,6 +30,14 @@ function addKeyboardKeyListener(
     if (!state.input) {
       return
     }
+
+    event.target.style.backgroundColor = '#555';
+    event.target.style.color = '#EFEFEF';
+    setTimeout(() => {
+      delete event.target.style;
+      delete event.target.style;
+    }, 600);
+
     variationsTimeout && clearTimeout(variationsTimeout)
     variationsTimeout = setTimeout(() => {
       cancelTouchEnd = true

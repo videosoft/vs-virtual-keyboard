@@ -75,20 +75,20 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
   window.addEventListener('focusout', e => {
 
     // Clicking on kb button, input focus out, returns it
-    if (getPreventFocusOut()) {
-      currentState.input.focus();
-      e.preventDefault();
-      return;
-    }
+    // if (getPreventFocusOut()) {
+    //   currentState.input && currentState.input.focus();
+    //   e.preventDefault();
+    //   return;
+    // }
 
-    // Focus out, hide keyboard
-    focusOutTimeout = setTimeout(() => {
-      const action = actions.get(ACTION_KB_TOGGLE)
-      if (action) {
-        const state: KeyboardState = action(currentState, { input: null })
-        render(state)
-      }
-    }, 600)
+    // // Focus out, hide keyboard
+    // focusOutTimeout = setTimeout(() => {
+    //   const action = actions.get(ACTION_KB_TOGGLE)
+    //   if (action) {
+    //     const state: KeyboardState = action(currentState, { input: null })
+    //     render(state)
+    //   }
+    // }, 600)
   })
 
   // First render
