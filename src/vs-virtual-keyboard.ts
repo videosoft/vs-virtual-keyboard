@@ -3,10 +3,13 @@ import { ACTION_KB_TOGGLE, ACTION_MODE_TOGGLE } from './actions'
 import keyboard, { getPreventFocusOut } from './components/keyboard'
 import KeyboardConfig from './types/kb-config'
 import KeyboardState from './types/kb-state'
+import { patch } from './utils/create-element'
 
 const VsVirtualKeyboard = (options: KeyboardConfig) => {
   let keyboardEl: any
   const config: KeyboardConfig = { ...options }
+  const wrp = document.createElement('div')
+  document.body.appendChild(wrp)
 
   // Initial state
   let currentState: KeyboardState = { config }
@@ -20,7 +23,7 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
     /**
      * Keyboard lifecycle
      */
-    const newEl = keyboard(state, config, (actionId: number, params: any) => {
+    const newEl: any = keyboard(state, config, (actionId: number, params: any) => {
       const action = actions.get(actionId)
       if (!action) {
         console.warn(`${actionId} NOT EXISTS`)
@@ -40,18 +43,21 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
       render(newState)
     })
 
-    keyboardEl ? keyboardEl.replaceWith(newEl) : document.body.appendChild(newEl)
-    keyboardEl = newEl
+    /**
+     * Updates view with vdom
+     */
+    patch(keyboardEl || wrp, newEl);
+    keyboardEl = newEl;
 
     /**
      * Adds default click handler to the new element
      */
-    newEl.addEventListener('click', event => {
+    ;(newEl as any).data.on.click = (event: any) => {
       event.preventDefault()
       if (state.input) {
         state.input.focus()
       }
-    })
+    }
   }
 
   /**
@@ -75,20 +81,20 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
   window.addEventListener('focusout', e => {
 
     // Clicking on kb button, input focus out, returns it
-    // if (getPreventFocusOut()) {
-    //   currentState.input && currentState.input.focus();
-    //   e.preventDefault();
-    //   return;
-    // }
+    if (getPreventFocusOut()) {
+      currentState.input && currentState.input.focus();
+      e.preventDefault();
+      return;
+    }
 
     // // Focus out, hide keyboard
-    // focusOutTimeout = setTimeout(() => {
-    //   const action = actions.get(ACTION_KB_TOGGLE)
-    //   if (action) {
-    //     const state: KeyboardState = action(currentState, { input: null })
-    //     render(state)
-    //   }
-    // }, 600)
+    focusOutTimeout = setTimeout(() => {
+      const action = actions.get(ACTION_KB_TOGGLE)
+      if (action) {
+        const state: KeyboardState = action(currentState, { input: null })
+        render(state)
+      }
+    }, 600)
   })
 
   // First render

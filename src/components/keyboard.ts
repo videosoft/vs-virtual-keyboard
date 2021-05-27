@@ -25,18 +25,14 @@ function addKeyboardKeyListener(
   const eventTrigger = isTouch ? 'touchstart' : 'mousedown'
   const eventPullout = isTouch ? 'touchend' : 'mouseup'
 
-  buttonEl.addEventListener(eventTrigger, (event: any) => {
+  buttonEl.data = buttonEl.data || {};
+  buttonEl.data.on = buttonEl.data.on || {};
+
+  buttonEl.data.on[eventTrigger] = (event: any) => {
     cancelTouchEnd = false
     if (!state.input) {
       return
     }
-
-    event.target.style.backgroundColor = '#555';
-    event.target.style.color = '#EFEFEF';
-    setTimeout(() => {
-      delete event.target.style;
-      delete event.target.style;
-    }, 600);
 
     variationsTimeout && clearTimeout(variationsTimeout)
     variationsTimeout = setTimeout(() => {
@@ -47,9 +43,9 @@ function addKeyboardKeyListener(
         setTimeout(() => cancelPullout = false, 400)
       }
     }, 1e3)
-  })
+  };
 
-  buttonEl.addEventListener(eventPullout, (event: any) => {
+  buttonEl.data.on[eventPullout] = (event: any) => {
     if (cancelPullout) {
       return
     }
@@ -101,7 +97,7 @@ function addKeyboardKeyListener(
 
       action(ACTION_KB_TYPED, {})
     }, 200)
-  });
+  };
 }
 
 
@@ -152,24 +148,24 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
                   subButtonsEl.push({ key: variation, button })
                   return button
                 })
-              ])
+              ]);
 
               // Stop event propagation to the parent button
-              variationsRow.addEventListener('touchstart', e => e.stopImmediatePropagation())
-              variationsRow.addEventListener('touchend', e => e.stopImmediatePropagation())
+              (variationsRow as any).data.on.touchstart = (e: any) => e.stopImmediatePropagation()
+              (variationsRow as any).data.on.touchend = (e: any) => e.stopImmediatePropagation()
 
               // Popover extreme position adjust
               setTimeout(() => {
-                const width = window.innerWidth
-                const coords = variationsRow.getBoundingClientRect()
-                if (coords.x < 300) {
-                  variationsRow.style.marginLeft = '200px'
-                  return
-                }
-                if (width - coords.x < 300) {
-                  variationsRow.style.marginLeft = '-200px'
-                  return
-                }
+                // const width = window.innerWidth
+                // const coords = variationsRow.getBoundingClientRect()
+                // if (coords.x < 300) {
+                //   variationsRow.style.marginLeft = '200px'
+                //   return
+                // }
+                // if (width - coords.x < 300) {
+                //   variationsRow.style.marginLeft = '-200px'
+                //   return
+                // }
               }, 200)
 
               // Returns el
@@ -189,7 +185,7 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
       } catch (err) {
         hash = encodeURIComponent(kButton.symbol)
       }
-      buttonEl.classList.add(`vs-virtual-kb-key-${hash.split('=').join('')}`)
+      buttonEl.sel += ` vs-virtual-kb-key-${hash.split('=').join('')}`;
 
       // Adding click listeners
       addKeyboardKeyListener(buttonEl, config, action, kButton, state)
@@ -209,30 +205,30 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
       state.input ? 'vs-virtual-kb-opened' : ''
     }`,
     rows
-  )
+  );
 
   // No context menu
-  appDiv.addEventListener('contextmenu', e => {
+  (appDiv as any).data.on.contextmenu = (e: any) => {
     e.preventDefault()
     state.input.focus()
-  })
+  }
 
   // Variation close
-  appDiv.addEventListener('click', e => {
+  (appDiv as any).data.on.click = (e: any) => {
     if (state.variationShow) {
       action(ACTION_VARIATION_TOGGLE, {})
     }
-  })
+  }
 
   // Prevent focus out notification
   let preventFocusOutTimeout: any;
-  appDiv.addEventListener('mousedown', () => {
+  (appDiv as any).data.on.mousedown = () => {
     preventFocusOut = true;
     if (preventFocusOutTimeout) {
       clearTimeout(preventFocusOutTimeout);
     }
     preventFocusOutTimeout = setTimeout(() => preventFocusOut = false, 50);
-  });
+  };
 
   return appDiv
 }
