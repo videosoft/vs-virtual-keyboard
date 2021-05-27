@@ -201,7 +201,7 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
   // App main div
   const appDiv = h(
     'div',
-    `vs-virtual-kb ${config.wrpClass || ''} vs-virtual-kb-closed${
+    `vs-virtual-kb ${config.wrpClass || ''} vs-virtual-kb-closed ${
       state.input ? 'vs-virtual-kb-opened' : ''
     }`,
     rows

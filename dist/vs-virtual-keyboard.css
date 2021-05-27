@@ -1,7 +1,7 @@
 .vs-virtual-kb {
   position: fixed;
   left: 0;
-  bottom: 0;
+  bottom: -60%;
   width: 100%;
   max-height: 60%;
   transition: 0.3s;
@@ -16,12 +16,9 @@
   opacity: 1;
 }
 
-.vs-virtual-kb-closed {
-  bottom: -60%;
-}
 
 .vs-virtual-kb-opened {
-  bottom: 0;
+  bottom: 0 !important;
 }
 
 .vs-virtual-kb-row {
@@ -79,11 +76,19 @@
   width: 460px;
   background: #FFF;
   z-index: 99999;
-  top: -125px;
+  top: -75px;
   left: -230px;
   border-radius: 8px;
   border: 1px solid #ACACAC;
   border-bottom: 3px solid #ACACAC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vs-virtual-kb-row-button-variations .vs-virtual-kb-row-button.vs-virtual-kb-row-button {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .vs-virtual-kb-key-QA.vs-virtual-kb-key-QA.vs-virtual-kb-key-QA {

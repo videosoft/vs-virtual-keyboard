@@ -79,7 +79,6 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
    * Focus-out interceptor and hide keyboard
    */
   window.addEventListener('focusout', e => {
-
     // Clicking on kb button, input focus out, returns it
     if (getPreventFocusOut()) {
       currentState.input && currentState.input.focus();

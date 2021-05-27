@@ -1023,7 +1023,7 @@ var keyboard = (function (state, config, action) {
         return h$1('div', 'vs-virtual-kb-row', buttons);
     });
     // App main div
-    var appDiv = h$1('div', "vs-virtual-kb " + (config.wrpClass || '') + " vs-virtual-kb-closed" + (state.input ? 'vs-virtual-kb-opened' : ''), rows);
+    var appDiv = h$1('div', "vs-virtual-kb " + (config.wrpClass || '') + " vs-virtual-kb-closed " + (state.input ? 'vs-virtual-kb-opened' : ''), rows);
     // No context menu
     appDiv.data.on.contextmenu = function (e) {
         e.preventDefault();
@@ -1046,6 +1046,7 @@ var keyboard = (function (state, config, action) {
     };
     return appDiv;
 });
+//# sourceMappingURL=keyboard.js.map
 
 var VsVirtualKeyboard = function (options) {
     var keyboardEl;
@@ -1130,7 +1131,6 @@ var VsVirtualKeyboard = function (options) {
     render(currentState);
 };
 window.VsVirtualKeyboard = VsVirtualKeyboard;
-//# sourceMappingURL=vs-virtual-keyboard.js.map
 
 export default VsVirtualKeyboard;
 //# sourceMappingURL=vs-virtual-keyboard.es5.js.map
