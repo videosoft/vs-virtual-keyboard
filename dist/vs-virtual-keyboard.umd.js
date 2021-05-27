@@ -300,9 +300,10 @@
         });
         return appDiv;
     });
+    //# sourceMappingURL=keyboard.js.map
 
-    var keyboardEl;
     var VsVirtualKeyboard = function (options) {
+        var keyboardEl;
         var config = __assign({}, options);
         // Initial state
         var currentState = { config: config };
@@ -382,7 +383,6 @@
         render(currentState);
     };
     window.VsVirtualKeyboard = VsVirtualKeyboard;
-    //# sourceMappingURL=vs-virtual-keyboard.js.map
 
     return VsVirtualKeyboard;
 

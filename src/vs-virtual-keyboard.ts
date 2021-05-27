@@ -4,8 +4,8 @@ import keyboard, { getPreventFocusOut } from './components/keyboard'
 import KeyboardConfig from './types/kb-config'
 import KeyboardState from './types/kb-state'
 
-let keyboardEl: any
 const VsVirtualKeyboard = (options: KeyboardConfig) => {
+  let keyboardEl: any
   const config: KeyboardConfig = { ...options }
 
   // Initial state

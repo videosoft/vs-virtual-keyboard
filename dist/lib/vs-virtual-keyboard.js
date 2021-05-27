@@ -15,7 +15,7 @@ var actions_1 = require("./actions");
 var actions_2 = require("./actions");
 var keyboard_1 = require("./components/keyboard");
 var keyboardEl;
-window.VsVirtualKeyboard = function (options) {
+var VsVirtualKeyboard = function (options) {
     var config = __assign({}, options);
     // Initial state
     var currentState = { config: config };
@@ -24,6 +24,9 @@ window.VsVirtualKeyboard = function (options) {
      */
     var render = function (state) {
         currentState = state;
+        /**
+         * Keyboard lifecycle
+         */
         var newEl = keyboard_1.default(state, config, function (actionId, params) {
             var action = actions_1.default.get(actionId);
             if (!action) {
@@ -45,6 +48,9 @@ window.VsVirtualKeyboard = function (options) {
         });
         keyboardEl ? keyboardEl.replaceWith(newEl) : document.body.appendChild(newEl);
         keyboardEl = newEl;
+        /**
+         * Adds default click handler to the new element
+         */
         newEl.addEventListener('click', function (event) {
             event.preventDefault();
             if (state.input) {
@@ -53,7 +59,7 @@ window.VsVirtualKeyboard = function (options) {
         });
     };
     /**
-     * Focus-in and Focus-out input and toggle keyboard
+     * Focus-in and toggle keyboard
      */
     var focusOutTimeout;
     window.addEventListener('focusin', function (event) {
@@ -63,10 +69,20 @@ window.VsVirtualKeyboard = function (options) {
             setTimeout(function () {
                 var state = action(currentState, { input: event.target });
                 render(state);
-            }, 50);
+            }, 10);
         }
     });
-    window.addEventListener('focusout', function () {
+    /**
+     * Focus-out interceptor and hide keyboard
+     */
+    window.addEventListener('focusout', function (e) {
+        // Clicking on kb button, input focus out, returns it
+        if (keyboard_1.getPreventFocusOut()) {
+            currentState.input.focus();
+            e.preventDefault();
+            return;
+        }
+        // Focus out, hide keyboard
         focusOutTimeout = setTimeout(function () {
             var action = actions_1.default.get(actions_2.ACTION_KB_TOGGLE);
             if (action) {
@@ -78,4 +94,6 @@ window.VsVirtualKeyboard = function (options) {
     // First render
     render(currentState);
 };
+window.VsVirtualKeyboard = VsVirtualKeyboard;
+exports.default = VsVirtualKeyboard;
 //# sourceMappingURL=vs-virtual-keyboard.js.map

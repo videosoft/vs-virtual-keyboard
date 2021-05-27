@@ -10,4 +10,6 @@ compiled
 .rpt2_cache
 docs
 .history
-/dist
+/dist/lib
+/dist/types
+

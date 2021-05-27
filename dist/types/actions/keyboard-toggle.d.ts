@@ -1,4 +1,4 @@
-import KeyboardState from "../types/kb-state";
+import KeyboardState from '../types/kb-state';
 declare const _default: (state: KeyboardState, params: any) => {
     input: any;
     layoutName?: string | undefined;

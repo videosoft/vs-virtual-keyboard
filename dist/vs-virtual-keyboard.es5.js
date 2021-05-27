@@ -294,9 +294,10 @@ var keyboard = (function (state, config, action) {
     });
     return appDiv;
 });
+//# sourceMappingURL=keyboard.js.map
 
-var keyboardEl;
 var VsVirtualKeyboard = function (options) {
+    var keyboardEl;
     var config = __assign({}, options);
     // Initial state
     var currentState = { config: config };
@@ -376,7 +377,6 @@ var VsVirtualKeyboard = function (options) {
     render(currentState);
 };
 window.VsVirtualKeyboard = VsVirtualKeyboard;
-//# sourceMappingURL=vs-virtual-keyboard.js.map
 
 export default VsVirtualKeyboard;
 //# sourceMappingURL=vs-virtual-keyboard.es5.js.map

@@ -21,6 +21,7 @@
   "scripts": {
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "watch": "rollup -c rollup.config.ts -w",
+    "build": "tsc --module commonjs && rollup -c rollup.config.ts",
     "server": "http-server dist -a 0.0.0.0 -p 8080 -c-1"
   },
   "lint-staged": {
