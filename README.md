@@ -112,6 +112,15 @@ const numericKb = [
     })()
   ]
 ];
+
+/**
+ * Exports keyboard
+ */
+export default {
+  defaultLayout: 'numeric',
+  layouts: [ { name: 'numeric', rows: numericKb } ]
+};
+
 ```
 
 The rows array items can be one string or one object. Being on string means one simple key
