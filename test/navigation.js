@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time));
 
-describe('User', function() {
+describe('Navigation test', function() {
   this.timeout(1e4);
 
   before(function(done) {
@@ -15,7 +15,7 @@ describe('User', function() {
   });
 
 
-  describe('#save()', function() {
+  describe('should type on text input', function() {
     it('should save without error', async function() {
       try {
         const browser = await puppeteer.launch({
