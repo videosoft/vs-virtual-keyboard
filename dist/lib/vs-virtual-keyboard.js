@@ -14,9 +14,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var actions_1 = require("./actions");
 var actions_2 = require("./actions");
 var keyboard_1 = require("./components/keyboard");
-var keyboardEl;
+var create_element_1 = require("./utils/create-element");
 var VsVirtualKeyboard = function (options) {
+    var keyboardEl;
     var config = __assign({}, options);
+    var wrp = document.createElement('div');
+    document.body.appendChild(wrp);
     // Initial state
     var currentState = { config: config };
     /**
@@ -46,17 +49,21 @@ var VsVirtualKeyboard = function (options) {
             }
             render(newState);
         });
-        keyboardEl ? keyboardEl.replaceWith(newEl) : document.body.appendChild(newEl);
+        /**
+         * Updates view with vdom
+         */
+        create_element_1.patch(keyboardEl || wrp, newEl);
         keyboardEl = newEl;
         /**
          * Adds default click handler to the new element
          */
-        newEl.addEventListener('click', function (event) {
+        ;
+        newEl.data.on.click = function (event) {
             event.preventDefault();
             if (state.input) {
                 state.input.focus();
             }
-        });
+        };
     };
     /**
      * Focus-in and toggle keyboard
@@ -78,11 +85,11 @@ var VsVirtualKeyboard = function (options) {
     window.addEventListener('focusout', function (e) {
         // Clicking on kb button, input focus out, returns it
         if (keyboard_1.getPreventFocusOut()) {
-            currentState.input.focus();
+            currentState.input && currentState.input.focus();
             e.preventDefault();
             return;
         }
-        // Focus out, hide keyboard
+        // // Focus out, hide keyboard
         focusOutTimeout = setTimeout(function () {
             var action = actions_1.default.get(actions_2.ACTION_KB_TOGGLE);
             if (action) {
