@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="vs-virtual-keyboard.css">
+  <title>Example app</title>
+</head>
+<body>
+
+  <h1>My application</h1>
+
+  <p>
+    <input type="text" class="my-input">
+  </p>
+
+  <p>
+    <input type="email" class="my-input">
+  </p>
+
+  <p>
+    <input type="tel" class="my-input" placeholder="NOT TOGGLE SAMPLE"><br/>
+  </p>
+
+  <p>
+    <input type="number" class="my-input" placeholder="NUMERIC"><br/>
+  </p>
+
+  <p>
+    <input type="email" class="my-input">
+  </p>
+
+
+  <!-- Imports the keyboard plugin -->
+  <script type="module">
+
+    // Imports the keyboard layout json
+    // In is fully customizable, open the file and follow the instructions to customize
+    import vsDefaultKeyboard from './vs-default-keyboard.js';
+
+    // Imports numeric keyboard
+    import vsNumericKeyboard from './vs-numeric-keyboard.js';
+
+    // Imports the lib
+    import VsVirtualKeyboard from './vs-virtual-keyboard.es5.js';
+
+    /**
+     *  ############## Virtual keyboard init function ######################
+     *
+     *  After this function, the virtual keyboard will appear when
+     *  the user focus some input
+     */
+    VsVirtualKeyboard({
+
+      // Keyboard wrapper class for custom css
+      wrpClass: 'vs-virtual-keyboard-wrp',
+
+      // Keyboard toggle on focus inputs types...
+      availableInTypes: ['text', 'email'],
+
+      // Keyboard layout, vs-default-keyboard.js exports a default querty
+      layouts: vsDefaultKeyboard,
+
+      // !! OPTIONAL !! Action interceptor
+      interceptor(keyboardState) {
+        // Auto capitalization
+        if (((keyboardState.input || {}).value || '').length === 1 &&
+             keyboardState.layoutName === 'uppercase-querty') {
+          if (keyboardState.input.dataset.capitalized) {
+            return keyboardState;
+          }
+          keyboardState.layoutName = 'lowercase-querty';
+          keyboardState.input.dataset.capitalized = '1';
+        }
+        return keyboardState;
+      },
+
+      // !! OPTIONAL !! LISTENERS, receives current value and must returns new value
+      // onChange, onKeyUp, onKeyDown
+    });
+
+
+    // Numeric
+    VsVirtualKeyboard({ availableInTypes: ['number'], layouts: vsNumericKeyboard });
+  </script>
+</body>
+</html>
