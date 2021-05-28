@@ -9,6 +9,9 @@ A **20kb virtual keyboard lib** witten in Typescript to run on top of modern bro
  - Faster (Vanilla typescript with VDom render)
  - Almost zero application change inpact (low coupling)
 
+![Alt text](docs/assets/demo1.gif "VS Virtual Keyboard")
+![Alt text](docs/assets/demo2.gif "VS Virtual Keyboard")
+
 # How to install
 
 You can import the keyboard init function installing as npm package:
@@ -18,14 +21,14 @@ npm install vs-virtual-keyboard --save
 ```
 
 Or using html ```<script>``` tag with vs-virtual-keyboard.es5 in the src property.
-This file can be found no dist directory.
+This file can be found on dist directory.
 
 ```
 <script src="vs-virtual-keyboard.es5.js"></script>
 ```
 
 If you want to use the default querty layout, you need to import the ```vs-default-keyboard.js```
-file.
+file. It is on layouts directory.
 
 ```
 import vsDefaultKeyboard from './vs-default-keyboard.js';
@@ -77,8 +80,10 @@ VsVirtualKeyboard({ availableInTypes: ['number'], layouts: vsNumericKeyboard });
 
 # Creating your own layout
 
-The ```layouts``` parameter of keyboard function receives on object with ```defaultLayout``` prop
-with is a string name of the default layout. The other prop name is ```layouts``` and receives an
+The ```layouts``` parameter of keyboard function receives on object with ```defaultLayout``` prop.
+It is a string name of the default layout. 
+
+The other prop name is ```layouts``` and receives an
 array of objects. Each on of these objects haves one name and one array of rows as below.
 
 ```
