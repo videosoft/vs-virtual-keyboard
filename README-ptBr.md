@@ -130,7 +130,7 @@ significa que é um botão simples com o simbolo da string e imprimindo a mesma.
 
 
 No caso de um objeto, pode ser definida a propriedade ```symbol```, que contém o símbolo no 
-teclado. Uma imagem pode ser definida na propriedade ```base64Icon``` para simbilizar a tecla.
+teclado. Uma imagem pode ser definida na propriedade ```base64Icon``` para simbolizar a tecla.
 **Opcional**
 
 
