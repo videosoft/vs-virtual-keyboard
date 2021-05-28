@@ -1,7 +1,7 @@
 
 # VS Virtual Keyboard
 
-Uma biblioteca de teclado virtual com **20kb** escrita em Typescript para ser utilizada em browsers
+Uma biblioteca de teclado virtual com **9kb**(com gzip) escrita em Typescript para ser utilizada em browsers
 modernos.
 
  - Sem dependências externas
