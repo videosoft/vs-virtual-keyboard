@@ -31,7 +31,7 @@ If you want to use the default querty layout, you need to import the ```vs-defau
 file. It is on layouts directory.
 
 ```
-import vsDefaultKeyboard from './vs-default-keyboard.js';
+import vsDefaultKeyboard from 'vs-default-keyboard';
 ```
 
 
