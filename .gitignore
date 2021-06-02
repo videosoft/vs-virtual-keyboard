@@ -11,4 +11,4 @@ compiled
 .history
 /dist/lib
 /dist/types
-
+package-lock.json
