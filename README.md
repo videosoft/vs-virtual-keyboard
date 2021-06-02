@@ -34,6 +34,9 @@ file. It is on layouts directory.
 import vsDefaultKeyboard from 'vs-default-keyboard';
 ```
 
+A ```vs-virtual-keyboard.css``` file can be found on dist directory. This file contains the 
+keyboard default responsive layout.
+
 
 # How to use
 

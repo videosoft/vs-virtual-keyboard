@@ -36,6 +36,8 @@ Esse arquivo está no diretório layouts.
 import vsDefaultKeyboard from './vs-default-keyboard.js';
 ```
 
+O arquivo ```vs-virtual-keyboard.css``` pode ser encontrado no diretório dist. 
+Esse arquivo contém o estilo responsivo padrão do teclado.
 
 # Utilizando o plugin
 
