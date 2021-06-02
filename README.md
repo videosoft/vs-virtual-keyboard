@@ -3,7 +3,7 @@
 
 A **9kb virtual keyboard lib**(with Gzip) written in Typescript to run on top of modern browsers.
 
- - No external dependencides
+ - No external dependencies
  - Fully customizable
  - Simple (default querty layout on repo)
  - Faster (Vanilla typescript with VDom render)
