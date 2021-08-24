@@ -9,6 +9,8 @@ import isTouchDevice from '../utils/is-touch'
 let preventFocusOut = false
 let cancelPullout = false
 let variationsTimeout: any
+let pressingTimeout: any
+let pressingInterval: any
 export const getPreventFocusOut = () => preventFocusOut;
 
 
@@ -28,40 +30,7 @@ function addKeyboardKeyListener(
   buttonEl.data = buttonEl.data || {};
   buttonEl.data.on = buttonEl.data.on || {};
 
-  buttonEl.data.on[eventTrigger] = (event: any) => {
-    cancelTouchEnd = false
-    if (!state.input) {
-      return
-    }
-
-    variationsTimeout && clearTimeout(variationsTimeout)
-    variationsTimeout = setTimeout(() => {
-      cancelTouchEnd = true
-      if (key.variations && key.variations.length) {
-        action(ACTION_VARIATION_TOGGLE, { key })
-        cancelPullout = true
-        setTimeout(() => cancelPullout = false, 400)
-      }
-    }, 1e3)
-  };
-
-  buttonEl.data.on[eventPullout] = (event: any) => {
-    if (cancelPullout) {
-      return
-    }
-
-    variationsTimeout && clearTimeout(variationsTimeout)
-
-    setTimeout(() => {
-
-      if (cancelTouchEnd) {
-        return
-      }
-
-      if (!state.input) {
-        return
-      }
-
+  const typedNow = () => {
       state.input = state.input || {}
 
       // Keyup optional listener
@@ -96,6 +65,56 @@ function addKeyboardKeyListener(
       }
 
       action(ACTION_KB_TYPED, {})
+  }
+
+  const clearKbTimeouts = () => {
+    variationsTimeout && clearTimeout(variationsTimeout);
+    pressingTimeout && clearTimeout(pressingTimeout);
+    pressingInterval && clearInterval(pressingInterval); 
+  }
+
+  buttonEl.data.on[eventTrigger] = (event: any) => {
+    event.preventDefault();
+    clearKbTimeouts();
+    cancelTouchEnd = false
+    if (!state.input) {
+      return
+    }
+
+    if (key.variations && key.variations.length) {
+      variationsTimeout = setTimeout(() => {
+        cancelTouchEnd = true
+        action(ACTION_VARIATION_TOGGLE, { key })
+        cancelPullout = true
+        setTimeout(() => cancelPullout = false, 400)
+      }, 1e3)
+    } else {
+      pressingTimeout = setTimeout(() => {
+        pressingInterval = setInterval(() => typedNow(), 90);
+      }, 800)
+    }
+  };
+
+  buttonEl.data.on[eventPullout] = (event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+    clearKbTimeouts();   
+
+    if (cancelPullout) {
+      return
+    }
+
+    setTimeout(() => {
+
+      if (cancelTouchEnd) {
+        return
+      }
+
+      if (!state.input) {
+        return
+      }
+
+      typedNow();
     }, 200)
   };
 }

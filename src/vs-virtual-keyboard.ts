@@ -67,11 +67,9 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
   window.addEventListener('focusin', (event: any) => {
     focusOutTimeout && clearTimeout(focusOutTimeout)
     const action = actions.get(ACTION_KB_TOGGLE)
-    if (action) {
-      setTimeout(() => {
-        const state: KeyboardState = action(currentState, { input: event.target })
-        render(state)
-      }, 10)
+    if (action) {      
+      const state: KeyboardState = action(currentState, { input: event.target })
+      render(state)
     }
   })
 
@@ -87,13 +85,11 @@ const VsVirtualKeyboard = (options: KeyboardConfig) => {
     }
 
     // // Focus out, hide keyboard
-    focusOutTimeout = setTimeout(() => {
-      const action = actions.get(ACTION_KB_TOGGLE)
-      if (action) {
-        const state: KeyboardState = action(currentState, { input: null })
-        render(state)
-      }
-    }, 600)
+    const action = actions.get(ACTION_KB_TOGGLE)
+    if (action) {
+      const state: KeyboardState = action(currentState, { input: null })
+      render(state)
+    }
   })
 
   // First render

@@ -224,7 +224,10 @@ function init(modules, domApi) {
     }
     function emptyNodeAt(elm) {
         const id = elm.id ? "#" + elm.id : "";
-        const c = elm.className ? "." + elm.className.split(" ").join(".") : "";
+        // elm.className doesn't return a string when elm is an SVG element inside a shadowRoot.
+        // https://stackoverflow.com/questions/29454340/detecting-classname-of-svganimatedstring
+        const classes = elm.getAttribute("class");
+        const c = classes ? "." + classes.split(" ").join(".") : "";
         return vnode(api.tagName(elm).toLowerCase() + id + c, {}, [], undefined, elm);
     }
     function createRmCb(childElm, listeners) {
@@ -671,8 +674,6 @@ const eventListenersModule = {
     destroy: updateEventListeners,
 };
 
-const raf = (typeof window !== "undefined" && window.requestAnimationFrame) || setTimeout;
-
 function updateProps(oldVnode, vnode) {
     let key;
     let cur;
@@ -697,17 +698,17 @@ function updateProps(oldVnode, vnode) {
 const propsModule = { create: updateProps, update: updateProps };
 
 // Bindig `requestAnimationFrame` like this fixes a bug in IE/Edge. See #360 and #409.
-const raf$1 = (typeof window !== "undefined" &&
+const raf = (typeof window !== "undefined" &&
     window.requestAnimationFrame.bind(window)) ||
     setTimeout;
-const nextFrame$1 = function (fn) {
-    raf$1(function () {
-        raf$1(fn);
+const nextFrame = function (fn) {
+    raf(function () {
+        raf(fn);
     });
 };
 let reflowForced = false;
-function setNextFrame$1(obj, prop, val) {
-    nextFrame$1(function () {
+function setNextFrame(obj, prop, val) {
+    nextFrame(function () {
         obj[prop] = val;
     });
 }
@@ -740,7 +741,7 @@ function updateStyle(oldVnode, vnode) {
             for (const name2 in style.delayed) {
                 cur = style.delayed[name2];
                 if (!oldHasDel || cur !== oldStyle.delayed[name2]) {
-                    setNextFrame$1(elm.style, name2, cur);
+                    setNextFrame(elm.style, name2, cur);
                 }
             }
         }
@@ -842,6 +843,8 @@ var isTouchDevice = function () { return (('ontouchstart' in window) ||
 var preventFocusOut = false;
 var cancelPullout = false;
 var variationsTimeout;
+var pressingTimeout;
+var pressingInterval;
 var getPreventFocusOut = function () { return preventFocusOut; };
 function addKeyboardKeyListener(buttonEl, config, action, key, state) {
     var cancelTouchEnd = false;
@@ -850,65 +853,81 @@ function addKeyboardKeyListener(buttonEl, config, action, key, state) {
     var eventPullout = isTouch ? 'touchend' : 'mouseup';
     buttonEl.data = buttonEl.data || {};
     buttonEl.data.on = buttonEl.data.on || {};
+    var typedNow = function () {
+        var _a, _b, _c, _d;
+        state.input = state.input || {};
+        // Keyup optional listener
+        if (config.onKeyUp) {
+            var newVal = config.onKeyUp((_a = state.input) === null || _a === void 0 ? void 0 : _a.value, key);
+            state.input.value = newVal || '';
+        }
+        // Keydown optional listener
+        if (config.onKeyDown) {
+            var newVal = config.onKeyDown((_b = state.input) === null || _b === void 0 ? void 0 : _b.value, key);
+            state.input.value = newVal || '';
+        }
+        // OnChange optional listener
+        if (config.onChange) {
+            var newVal = config.onChange((_c = state.input) === null || _c === void 0 ? void 0 : _c.value, key);
+            state.input.value = newVal || '';
+        }
+        // Key custom action
+        if (key.action) {
+            var newVal = key.action((_d = state.input) === null || _d === void 0 ? void 0 : _d.value);
+            state.input.value = newVal || '';
+            return;
+        }
+        else if (key.layoutShift) {
+            // Layout shift key
+            action(ACTION_MODE_TOGGLE, { layoutName: key.layoutShift });
+            return;
+        }
+        else {
+            state.input.value = state.input.value + '' + key.symbol;
+        }
+        action(ACTION_KB_TYPED, {});
+    };
+    var clearKbTimeouts = function () {
+        variationsTimeout && clearTimeout(variationsTimeout);
+        pressingTimeout && clearTimeout(pressingTimeout);
+        pressingInterval && clearInterval(pressingInterval);
+    };
     buttonEl.data.on[eventTrigger] = function (event) {
+        event.preventDefault();
+        clearKbTimeouts();
         cancelTouchEnd = false;
         if (!state.input) {
             return;
         }
-        variationsTimeout && clearTimeout(variationsTimeout);
-        variationsTimeout = setTimeout(function () {
-            cancelTouchEnd = true;
-            if (key.variations && key.variations.length) {
+        if (key.variations && key.variations.length) {
+            variationsTimeout = setTimeout(function () {
+                cancelTouchEnd = true;
                 action(ACTION_VARIATION_TOGGLE, { key: key });
                 cancelPullout = true;
                 setTimeout(function () { return cancelPullout = false; }, 400);
-            }
-        }, 1e3);
+            }, 1e3);
+        }
+        else {
+            pressingTimeout = setTimeout(function () {
+                pressingInterval = setInterval(function () { return typedNow(); }, 90);
+            }, 800);
+        }
     };
     buttonEl.data.on[eventPullout] = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        clearKbTimeouts();
         if (cancelPullout) {
             return;
         }
-        variationsTimeout && clearTimeout(variationsTimeout);
         setTimeout(function () {
-            var _a, _b, _c, _d;
             if (cancelTouchEnd) {
                 return;
             }
             if (!state.input) {
                 return;
             }
-            state.input = state.input || {};
-            // Keyup optional listener
-            if (config.onKeyUp) {
-                var newVal = config.onKeyUp((_a = state.input) === null || _a === void 0 ? void 0 : _a.value, key);
-                state.input.value = newVal || '';
-            }
-            // Keydown optional listener
-            if (config.onKeyDown) {
-                var newVal = config.onKeyDown((_b = state.input) === null || _b === void 0 ? void 0 : _b.value, key);
-                state.input.value = newVal || '';
-            }
-            // OnChange optional listener
-            if (config.onChange) {
-                var newVal = config.onChange((_c = state.input) === null || _c === void 0 ? void 0 : _c.value, key);
-                state.input.value = newVal || '';
-            }
-            // Key custom action
-            if (key.action) {
-                var newVal = key.action((_d = state.input) === null || _d === void 0 ? void 0 : _d.value);
-                state.input.value = newVal || '';
-                return;
-            }
-            else if (key.layoutShift) {
-                // Layout shift key
-                action(ACTION_MODE_TOGGLE, { layoutName: key.layoutShift });
-                return;
-            }
-            else {
-                state.input.value = state.input.value + '' + key.symbol;
-            }
-            action(ACTION_KB_TYPED, {});
+            typedNow();
         }, 200);
     };
 }
@@ -1062,18 +1081,11 @@ var VsVirtualKeyboard = function (options) {
             }
         };
     };
-    /**
-     * Focus-in and toggle keyboard
-     */
-    var focusOutTimeout;
     window.addEventListener('focusin', function (event) {
-        focusOutTimeout && clearTimeout(focusOutTimeout);
         var action = actions.get(ACTION_KB_TOGGLE);
         if (action) {
-            setTimeout(function () {
-                var state = action(currentState, { input: event.target });
-                render(state);
-            }, 10);
+            var state = action(currentState, { input: event.target });
+            render(state);
         }
     });
     /**
@@ -1087,13 +1099,11 @@ var VsVirtualKeyboard = function (options) {
             return;
         }
         // // Focus out, hide keyboard
-        focusOutTimeout = setTimeout(function () {
-            var action = actions.get(ACTION_KB_TOGGLE);
-            if (action) {
-                var state = action(currentState, { input: null });
-                render(state);
-            }
-        }, 600);
+        var action = actions.get(ACTION_KB_TOGGLE);
+        if (action) {
+            var state = action(currentState, { input: null });
+            render(state);
+        }
     });
     // First render
     render(currentState);
