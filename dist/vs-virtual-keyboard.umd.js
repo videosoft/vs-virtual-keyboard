@@ -39,11 +39,16 @@
     }
 
     var kdToggle = (function (state, params) {
-        var _a;
+        var _a, _b;
         if (!params.input) {
             return __assign(__assign({}, state), { input: null });
         }
-        if ((((_a = state.config) === null || _a === void 0 ? void 0 : _a.availableInTypes) || ['text']).indexOf(params.input.type || '') === -1) {
+        if (params.input.dataset.forceKeyboard) {
+            if ((((_a = state.config) === null || _a === void 0 ? void 0 : _a.availableInTypes) || ['text']).indexOf(params.input.dataset.forceKeyboard) === -1) {
+                return __assign(__assign({}, state), { input: null });
+            }
+        }
+        else if ((((_b = state.config) === null || _b === void 0 ? void 0 : _b.availableInTypes) || ['text']).indexOf(params.input.type || '') === -1) {
             return __assign(__assign({}, state), { input: null });
         }
         return __assign(__assign({}, state), { input: params.input });
