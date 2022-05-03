@@ -55,6 +55,7 @@ function addKeyboardKeyListener(
       if (key.action) {
         const newVal = key.action(state.input?.value)
         state.input.value = newVal || ''
+        action(ACTION_KB_TYPED, {})
         return
       } else if (key.layoutShift) {
         // Layout shift key

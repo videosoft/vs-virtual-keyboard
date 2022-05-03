@@ -880,6 +880,7 @@ function addKeyboardKeyListener(buttonEl, config, action, key, state) {
         if (key.action) {
             var newVal = key.action((_d = state.input) === null || _d === void 0 ? void 0 : _d.value);
             state.input.value = newVal || '';
+            action(ACTION_KB_TYPED, {});
             return;
         }
         else if (key.layoutShift) {
