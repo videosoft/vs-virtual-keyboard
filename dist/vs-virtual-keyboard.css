@@ -99,15 +99,18 @@
   position: absolute;
   width: 100%;
   background-color: #DADADA;
-  top: -80px;
+  top: -60px;
   padding-left: 5%;
   padding-right: 5%;
+  height: 60px;
 }
 
 .vs-virtual-keyboard-shortcuts .vs-virtual-kb-row-button {
   width: auto;
   font-size: 0.9rem;
   height: 50px;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 @media(max-height: 700px) {
