@@ -6,6 +6,16 @@
  *
  */
 
+
+/**
+ * Shortcuts for lowercase
+ */
+const shortcuts = [
+  '@gmail.com',
+  '@live.com',
+  '.com'
+];
+
 /**
  * NUMERIC
  * Numeric keyboard config
@@ -217,7 +227,7 @@ quertyUppercase[2][0] = {
 export default {
   defaultLayout: 'uppercase-querty',
   layouts: [
-    { name: 'lowercase-querty', rows: querty },
+    { name: 'lowercase-querty', rows: querty, shortcuts },
     { name: 'uppercase-querty', rows: quertyUppercase },
     { name: 'numeric', rows: numericKb },
     { name: 'advanced-math-symbols', rows: advancedMathSymbolsKb }

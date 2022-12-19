@@ -1,7 +1,7 @@
 .vs-virtual-kb {
   position: fixed;
   left: 0;
-  bottom: -60%;
+  bottom: -100%;
   width: 100%;
   max-height: 60%;
   transition: 0.3s;
@@ -93,6 +93,21 @@
 
 .vs-virtual-kb-key-QA.vs-virtual-kb-key-QA.vs-virtual-kb-key-QA {
   font-weight: 1000;
+}
+
+.vs-virtual-keyboard-shortcuts {
+  position: absolute;
+  width: 100%;
+  background-color: #DADADA;
+  top: -80px;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.vs-virtual-keyboard-shortcuts .vs-virtual-kb-row-button {
+  width: auto;
+  font-size: 0.9rem;
+  height: 50px;
 }
 
 @media(max-height: 700px) {

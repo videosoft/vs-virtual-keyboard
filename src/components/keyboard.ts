@@ -122,14 +122,14 @@ function addKeyboardKeyListener(
 
 
 export default (state: KeyboardState, config: KeyboardConfig, action: Function) => {
-
   // Gets the default layout for first
   if (!state.layout) {
     const layouts: any = config.layouts || {}
     const layout = layouts.layouts.find((l: any) => l.name === config.layouts?.defaultLayout)
     action(ACTION_MODE_TOGGLE, {
-      layout: layout.rows,
-      layoutName: config.layouts?.defaultLayout
+      layout: layout,
+      layoutName: config.layouts?.defaultLayout,
+      shortcuts: layout.shortcuts
     })
     return h('div', 'vs-virtual-kb', [])
   }
@@ -218,13 +218,25 @@ export default (state: KeyboardState, config: KeyboardConfig, action: Function) 
     return h('div', 'vs-virtual-kb-row', buttons)
   })
 
+  // Create shortcuts row
+  let shortcutsRow = h('span', '', []);
+  if (state.shortcuts) {
+    shortcutsRow = h('div', 'vs-virtual-keyboard-shortcuts', state.shortcuts.map(shotcutKey => {
+      const buttonEl = h('button', 'vs-virtual-kb-row-button vs-virtual-keyboard-kb-shortcut-row-button', [
+        h('span', '', [], shotcutKey)
+      ]);
+      addKeyboardKeyListener(buttonEl, config, action, { symbol: shotcutKey }, state);
+      return buttonEl;
+    }));
+  }
+
   // App main div
   const appDiv = h(
     'div',
     `vs-virtual-kb ${config.wrpClass || ''} vs-virtual-kb-closed ${
       state.input ? 'vs-virtual-kb-opened' : ''
     }`,
-    rows
+    [ shortcutsRow, ...rows ]
   );
 
   // No context menu
