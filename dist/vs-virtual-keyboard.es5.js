@@ -47,6 +47,7 @@ var kdToggle = (function (state, params) {
     }
     return __assign(__assign({}, state), { input: params.input });
 });
+//# sourceMappingURL=keyboard-toggle.js.map
 
 function getLayoutTable(layoutJson) {
     return layoutJson.map(function (l) {
@@ -67,25 +68,30 @@ function getLayoutTable(layoutJson) {
     });
 }
 var kdModeShift = (function (state, params) {
-    var _a, _b, _c;
+    var _a, _b;
     state.layoutName = params.layoutName;
     try {
-        state.layout = getLayoutTable(params.layout || ((_c = (_b = (_a = state.config) === null || _a === void 0 ? void 0 : _a.layouts) === null || _b === void 0 ? void 0 : _b.layouts.find(function (l) { return l.name === state.layoutName; })) === null || _c === void 0 ? void 0 : _c.rows));
+        var layout = params.layout || ((_b = (_a = state.config) === null || _a === void 0 ? void 0 : _a.layouts) === null || _b === void 0 ? void 0 : _b.layouts.find(function (l) { return l.name === state.layoutName; }));
+        state.layout = getLayoutTable(layout.rows);
+        state.shortcuts = layout.shortcuts;
     }
     catch (err) {
         console.error(err);
     }
     return __assign({}, state);
 });
+//# sourceMappingURL=keyboard-mode-shift.js.map
 
 var kbTyped = (function (state, params) {
     return __assign(__assign({}, state), { variationShow: null });
 });
+//# sourceMappingURL=keyboard-typed.js.map
 
 var variationToggle = (function (state, params) {
     var key = params.key;
     return __assign(__assign({}, state), { variationShow: key });
 });
+//# sourceMappingURL=keyboard-variation-toggle.js.map
 
 var ACTION_KB_TOGGLE = 0;
 var ACTION_MODE_TOGGLE = 2;
@@ -96,6 +102,7 @@ actions.set(ACTION_KB_TOGGLE, kdToggle);
 actions.set(ACTION_MODE_TOGGLE, kdModeShift);
 actions.set(ACTION_KB_TYPED, kbTyped);
 actions.set(ACTION_VARIATION_TOGGLE, variationToggle);
+//# sourceMappingURL=index.js.map
 
 function createElement(tagName, options) {
     return document.createElement(tagName, options);
@@ -159,16 +166,19 @@ const htmlDomApi = {
     isText,
     isComment,
 };
+//# sourceMappingURL=htmldomapi.js.map
 
 function vnode(sel, data, children, text, elm) {
     const key = data === undefined ? undefined : data.key;
     return { sel, data, children, text, elm, key };
 }
+//# sourceMappingURL=vnode.js.map
 
 const array = Array.isArray;
 function primitive(s) {
     return typeof s === "string" || typeof s === "number";
 }
+//# sourceMappingURL=is.js.map
 
 function isUndef(s) {
     return s === undefined;
@@ -508,6 +518,7 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
+//# sourceMappingURL=init.js.map
 
 function addNS(data, children, sel) {
     data.ns = "http://www.w3.org/2000/svg";
@@ -567,6 +578,17 @@ function h(sel, b, c) {
     }
     return vnode(sel, data, children, text, undefined);
 }
+//# sourceMappingURL=h.js.map
+
+//# sourceMappingURL=thunk.js.map
+
+//# sourceMappingURL=attachto.js.map
+
+//# sourceMappingURL=tovnode.js.map
+
+//# sourceMappingURL=hooks.js.map
+
+//# sourceMappingURL=attributes.js.map
 
 function updateClass(oldVnode, vnode) {
     let cur;
@@ -594,6 +616,9 @@ function updateClass(oldVnode, vnode) {
     }
 }
 const classModule = { create: updateClass, update: updateClass };
+//# sourceMappingURL=class.js.map
+
+//# sourceMappingURL=dataset.js.map
 
 function invokeHandler(handler, vnode, event) {
     if (typeof handler === "function") {
@@ -678,6 +703,7 @@ const eventListenersModule = {
     update: updateEventListeners,
     destroy: updateEventListeners,
 };
+//# sourceMappingURL=eventlisteners.js.map
 
 function updateProps(oldVnode, vnode) {
     let key;
@@ -701,6 +727,7 @@ function updateProps(oldVnode, vnode) {
     }
 }
 const propsModule = { create: updateProps, update: updateProps };
+//# sourceMappingURL=props.js.map
 
 // Bindig `requestAnimationFrame` like this fixes a bug in IE/Edge. See #360 and #409.
 const raf = (typeof window !== "undefined" &&
@@ -815,10 +842,13 @@ const styleModule = {
     destroy: applyDestroyStyle,
     remove: applyRemoveStyle,
 };
+//# sourceMappingURL=style.js.map
 
 /* eslint-disable @typescript-eslint/no-namespace, import/export */
+//# sourceMappingURL=jsx.js.map
 
 // core
+//# sourceMappingURL=index.js.map
 
 var patch = init([
     // Init patch function with chosen modules
@@ -840,10 +870,12 @@ var h$1 = function (tagName, classList, children, options) {
     el.data.on = el.data.on || {};
     return el;
 };
+//# sourceMappingURL=create-element.js.map
 
 var isTouchDevice = function () { return (('ontouchstart' in window) ||
     (navigator.maxTouchPoints > 0) ||
     (navigator.msMaxTouchPoints > 0)); };
+//# sourceMappingURL=is-touch.js.map
 
 var preventFocusOut = false;
 var cancelPullout = false;
@@ -944,8 +976,9 @@ var keyboard = (function (state, config, action) {
         var layouts = config.layouts || {};
         var layout = layouts.layouts.find(function (l) { var _a; return l.name === ((_a = config.layouts) === null || _a === void 0 ? void 0 : _a.defaultLayout); });
         action(ACTION_MODE_TOGGLE, {
-            layout: layout.rows,
-            layoutName: (_a = config.layouts) === null || _a === void 0 ? void 0 : _a.defaultLayout
+            layout: layout,
+            layoutName: (_a = config.layouts) === null || _a === void 0 ? void 0 : _a.defaultLayout,
+            shortcuts: layout.shortcuts
         });
         return h$1('div', 'vs-virtual-kb', []);
     }
@@ -1016,8 +1049,19 @@ var keyboard = (function (state, config, action) {
         // Row buttons div
         return h$1('div', 'vs-virtual-kb-row', buttons);
     });
+    // Create shortcuts row
+    var shortcutsRow = h$1('span', '', []);
+    if (state.shortcuts) {
+        shortcutsRow = h$1('div', 'vs-virtual-keyboard-shortcuts', state.shortcuts.map(function (shotcutKey) {
+            var buttonEl = h$1('button', 'vs-virtual-kb-row-button vs-virtual-keyboard-kb-shortcut-row-button', [
+                h$1('span', '', [], shotcutKey)
+            ]);
+            addKeyboardKeyListener(buttonEl, config, action, { symbol: shotcutKey }, state);
+            return buttonEl;
+        }));
+    }
     // App main div
-    var appDiv = h$1('div', "vs-virtual-kb " + (config.wrpClass || '') + " vs-virtual-kb-closed " + (state.input ? 'vs-virtual-kb-opened' : ''), rows);
+    var appDiv = h$1('div', "vs-virtual-kb " + (config.wrpClass || '') + " vs-virtual-kb-closed " + (state.input ? 'vs-virtual-kb-opened' : ''), __spreadArrays([shortcutsRow], rows));
     // No context menu
     appDiv.data.on.contextmenu = function (e) {
         e.preventDefault();
@@ -1115,6 +1159,7 @@ var VsVirtualKeyboard = function (options) {
     render(currentState);
 };
 window.VsVirtualKeyboard = VsVirtualKeyboard;
+//# sourceMappingURL=vs-virtual-keyboard.js.map
 
 export default VsVirtualKeyboard;
 //# sourceMappingURL=vs-virtual-keyboard.es5.js.map

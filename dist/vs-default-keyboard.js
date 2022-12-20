@@ -6,6 +6,16 @@
  *
  */
 
+
+/**
+ * Shortcuts for lowercase
+ */
+const shortcuts = [
+  '@gmail.com',
+  '@live.com',
+  '.com'
+];
+
 /**
  * NUMERIC
  * Numeric keyboard config
@@ -47,7 +57,12 @@
         return value + ' ';
       }
     },
-    { symbol: '@' },
+    {
+      symbol: '@',
+      action(value) {
+        return value;
+      }
+    },
     {
       symbol: 'retorno',
       action(value) {
@@ -90,7 +105,12 @@ const advancedMathSymbolsKb = [
         return value + ' ';
       }
     },
-    { symbol: '@' },
+    {
+      symbol: '@',
+      action(value) {
+        return value;
+      }
+    },
     {
       symbol: 'retorno',
       action(value) {
@@ -162,7 +182,12 @@ const querty = [
         return value + ' ';
       }
     },
-    { symbol: '@' },
+    {
+      symbol: '@',
+      action(value) {
+        return value;
+      }
+    },
     {
       symbol: 'retorno',
       action(value) {
@@ -202,7 +227,7 @@ quertyUppercase[2][0] = {
 export default {
   defaultLayout: 'uppercase-querty',
   layouts: [
-    { name: 'lowercase-querty', rows: querty },
+    { name: 'lowercase-querty', rows: querty, shortcuts },
     { name: 'uppercase-querty', rows: quertyUppercase },
     { name: 'numeric', rows: numericKb },
     { name: 'advanced-math-symbols', rows: advancedMathSymbolsKb }

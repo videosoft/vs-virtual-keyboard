@@ -5,6 +5,7 @@ export default interface KeyboardConfig {
         layouts: Array<{
             name: string;
             rows: Array<Array<any>>;
+            shortcuts?: Array<string>;
         }>;
     };
     onKeyUp?: Function;

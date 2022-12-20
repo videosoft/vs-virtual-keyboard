@@ -27,9 +27,9 @@ export default (state: KeyboardState, params: any) => {
   state.layoutName = params.layoutName
 
   try {
-    state.layout = getLayoutTable(
-      params.layout || state.config?.layouts?.layouts.find(l => l.name === state.layoutName)?.rows
-    )
+    const layout = params.layout || state.config?.layouts?.layouts.find(l => l.name === state.layoutName)
+    state.layout = getLayoutTable(layout.rows)
+    state.shortcuts = layout.shortcuts
   } catch (err) {
     console.error(err)
   }
