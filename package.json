@@ -1,6 +1,6 @@
 {
   "name": "vs-virtual-keyboard",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "",
   "keywords": [],
   "main": "dist/vs-virtual-keyboard.umd.js",
