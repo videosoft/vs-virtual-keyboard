@@ -1,0 +1,6 @@
+include:
+- project: ifood/pipelines/gitlab-pipelines
+  ref: ifood-security-4-edge
+  file: pipelines/ifood-security/main.yml
+variables:
+  SERVICE_NAME: vs-virtual-keyboard
