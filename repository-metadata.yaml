@@ -1,15 +1,15 @@
 apiVersion: ifood/v2.1
 kind: Repository
 tags:
-- webapp
+  - webapp
 spec:
   contents:
-  - name: vs-virtual-keyboard
-    description: VS Virtual Keyboard
-    type: service
-    ownerLayerSlug: tech-all-in-one
-    subType:
-    - webapp
-    impactLevel: 3
-    deployment:
-      type: k8s_helm
+    - name: vs-virtual-keyboard
+      description: VS Virtual Keyboard
+      type: service
+      ownerLayerSlug: tech-all-in-one
+      subType:
+        - webapp
+      impactLevel: 3
+      deployment:
+        type: k8s_helm
