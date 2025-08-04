@@ -1,4 +1,4 @@
-apiVersion: ifood/v2.1
+apiVersion: ifood/v2.4
 kind: Repository
 tags:
   - webapp
@@ -7,7 +7,7 @@ spec:
     - name: vs-virtual-keyboard
       description: VS Virtual Keyboard
       type: service
-      ownerLayerSlug: tech-all-in-one
+      ownerLayerSlug: op-om-totem
       subType:
         - webapp
       impactLevel: 3
