@@ -81,7 +81,7 @@
   "dependencies": {
     "@types/virtual-dom": "^2.1.0",
     "chai": "^4.3.4",
-    "mocha": "^8.4.0",
+    "mocha": "10.1.0",
     "snabbdom": "^3.0.1",
     "tslib": "^2.2.0",
     "virtual-dom": "^2.1.1"
