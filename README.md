@@ -17,7 +17,7 @@ A **9kb virtual keyboard lib**(with Gzip) written in Typescript to run on top of
 You can import the keyboard init function installing as npm package:
 
 ```
-npm install vs-virtual-keyboard --save
+yarn add vs-virtual-keyboard
 ```
 
 Or using html ```<script>``` tag with vs-virtual-keyboard.es5 in the src property.

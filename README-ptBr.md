@@ -18,7 +18,7 @@ modernos.
 Pode-se importar a função init do teclado instalando-a como um pacote npm:
 
 ```
-npm install vs-virtual-keyboard --save
+yarn add vs-virtual-keyboard
 ```
 
 

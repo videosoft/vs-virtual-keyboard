@@ -12,3 +12,4 @@ compiled
 /dist/lib
 /dist/types
 package-lock.json
+yarn-error.log
