@@ -1,4 +1,4 @@
-apiVersion: ifood/v2.4
+apiVersion: ifood/v2.5
 kind: Repository
 tags:
   - webapp
